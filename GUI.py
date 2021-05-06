@@ -66,12 +66,25 @@ class InputDataButton(QPushButton):
         self.countries = "Poland,Germany"
         self.filepath = "covid.csv"
         self.__value = "INPUT DATA"
-        self.clicked.connect(self.__input)
+        self.clicked.connect(self.xd)
+        self.__data = dict()
+
+    def xd(self):
+        return self.__input()
 
     def __input(self):
         print("input")  # wywolanie classy/metody z okienkiem do inputu
         self.__data = self.read_countries_data(self.filepath, self.countries)
         print(self.__data)
+
+    def get_patients_as_vector(self, country_data_line):
+        n_of_unimportant_column = 4
+        if country_data_line[0:2] == ',"':
+            n_of_unimportant_column = 5
+        n_of_patients_in_time = country_data_line.split(",")[n_of_unimportant_column:]
+        n_of_patients_in_time = [int(val) for val in n_of_patients_in_time]
+
+        return n_of_patients_in_time
 
     def read_countries_data(self, filepath, countries):
         countries_data = dict()
@@ -82,28 +95,15 @@ class InputDataButton(QPushButton):
                     maybe_country = line.split(",")[COUNTRY_COLUMN_ID]
 
                     line = line.strip()
-
-                    n_of_patients_in_time = get_patients_as_vector(line)
-
+                    n_of_patients_in_time = self.get_patients_as_vector(line)
                     countries_data[maybe_country] = n_of_patients_in_time
         return countries_data
 
+    def get_countries(self):
+        return self.countries
 
-def get_patients_as_vector(country_data_line):
-    n_of_patients_in_time = []
-    all_data = country_data_line.split(",")
-    for item in all_data:
-        print(item)
-        if isinstance()
-    print(n_of_patients_in_time)
-    return n_of_patients_in_time
-
-def get_countries(self):
-    return self.countries
-
-
-def get_data(self):
-    return self.__data
+    def get_data(self):
+        return self.__data
 
 
 class MakeGraphButton(QPushButton):
@@ -112,12 +112,10 @@ class MakeGraphButton(QPushButton):
         super().__init__("MAKE GRAPH")
         self.__lol = lol
         self.__value = "MAKE GRAPH"
-        self.clicked.connect(self.__graph())
+        self.clicked.connect(self.__graph(lol))
 
-    def __graph(self):
-        graph = Graph(self.__lol)
-        graph.display_data()
-        pass
+    def __graph(self, lol):
+        return lambda _: print(lol)
 
 
 class SearchPanel(QLineEdit):
@@ -174,7 +172,14 @@ class Window(QWidget):
     # stworzenie okna i dodanie paneli do niego (wywoluje wszystkie klasy przyciskow itd)
     def __init__(self):
         super().__init__()
+        self.data = dict()
         self.__prepare_window()
+
+    def data_upload(self, Input: InputDataButton):
+        self.data = Input
+
+    def xd2(self, Input: InputDataButton):
+        return self.data_upload(Input)
 
     def __prepare_window(self):
         # self.countries = CountryBox.countries
@@ -183,12 +188,13 @@ class Window(QWidget):
         self.__slider_time = TimeSlider()
         self.__search = SearchPanel()
         self.__input = InputDataButton()
+        self.__input.clicked.connect(self.xd2(self.__input))
+        self.__graph_button = MakeGraphButton(self.data)
         # lol = self.__input
-        # self.__graph_button = MakeGraphButton(lol)
         # stworzenie jakis widgetow (wywolanie fucnkji z gory)
         main_layout = QGridLayout()
         main_layout.addWidget(self.__country_box, 1, 4, 3, 1)
-        # main_layout.addWidget(self.__graph_button, 4, 0, 1, 1)
+        main_layout.addWidget(self.__graph_button, 4, 0, 1, 1)
         # main_layout.addWidget(self.__pdf_button, 4, 4, 1, 1)
         main_layout.addWidget(self.__slider_time, 4, 1, 1, 2)
         main_layout.addWidget(self.__search, 0, 4, 1, 2)
@@ -202,6 +208,5 @@ if __name__ == "__main__":
     app = QApplication([])
 
     window = Window()
-    lol = InputDataButton()
 
     sys.exit(app.exec_())
