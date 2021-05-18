@@ -2,9 +2,12 @@ import sys
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QLineEdit, QGroupBox, QPushButton, \
-    QHBoxLayout, QSlider, QScrollArea, QFormLayout, QLabel, QHBoxLayout, QMessageBox
+    QHBoxLayout, QSlider, QScrollArea, QFormLayout, QLabel, QHBoxLayout, QMessageBox, QFileDialog
 from Graph import Graph
-from Popup_windows import InputWindow
+from Popup_windows import InputWindow, ErrorWindow
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as Figure
+from matplotlib import pyplot as plt
+import numpy as np
 
 COUNTRY_COLUMN_ID = 1
 
@@ -63,19 +66,26 @@ class TimeSlider(QWidget):
 class InputDataButton(QPushButton):
     def __init__(self):
         super().__init__("INPUT DATA")
-        self.countries = "Poland,Germany"
-        self.filepath = "covid.csv"
+        self.countries = "Poland"
+        self.filepath = None
         self.__value = "INPUT DATA"
         self.clicked.connect(self.xd)
-        self.__data = dict()
+        self.data = None
 
     def xd(self):
-        return self.__input()
+        try:
+            filename = QFileDialog.getOpenFileName(self, "Get Data File", "*.csv")
+            print(f"{filename}")
+            self.__input(filename[0])
+        except:
+            ErrorWindow("Nie Wybrano Pliku!")
 
-    def __input(self):
+    def __input(self, filename):
         print("input")  # wywolanie classy/metody z okienkiem do inputu
-        self.__data = self.read_countries_data(self.filepath, self.countries)
-        print(self.__data)
+        self.data = self.read_countries_data(filename, self.countries)
+        print(self.data)
+
+        # Plot.new([1, 2, 3, 4, 5, 6], xdd)
 
     def get_patients_as_vector(self, country_data_line):
         n_of_unimportant_column = 4
@@ -93,26 +103,25 @@ class InputDataButton(QPushButton):
             for line in f:
                 if line[0] == ",":
                     maybe_country = line.split(",")[COUNTRY_COLUMN_ID]
-
-                    line = line.strip()
-                    n_of_patients_in_time = self.get_patients_as_vector(line)
-                    countries_data[maybe_country] = n_of_patients_in_time
+                    if maybe_country in countries:
+                        line = line.strip()
+                        n_of_patients_in_time = self.get_patients_as_vector(line)
+                        countries_data[maybe_country] = n_of_patients_in_time
         return countries_data
 
     def get_countries(self):
         return self.countries
 
     def get_data(self):
-        return self.__data
+        return self.data
 
 
 class MakeGraphButton(QPushButton):
     # przycisk do tworzenia wykresu (prawdopodobnie sie usunie go)
-    def __init__(self, lol):
+    def __init__(self, parent: QWidget):
         super().__init__("MAKE GRAPH")
-        self.__lol = lol
         self.__value = "MAKE GRAPH"
-        self.clicked.connect(self.__graph(lol))
+        self.clicked.connect(self.__graph(parent.input.data))
 
     def __graph(self, lol):
         return lambda _: print(lol)
@@ -145,6 +154,7 @@ class CountryBox(QScrollArea):
         super().__init__()
         self.__n_of_countries = []
         self.__init_view(size)
+        self.pushed = []
 
     def __init_view(self, size):
         btn_layout = QFormLayout()
@@ -162,10 +172,25 @@ class CountryBox(QScrollArea):
         self.setWidgetResizable(True)
 
     def func_print_me(self, name):
-        return lambda _: print(name)
+        return lambda _: self.names(name)
+
+    def names(self, name):
+        self.pushed.append(name)
+        print(self.pushed)
 
     def countries(self):
         return len(self.__n_of_countries)
+
+
+class Plot(Figure):
+    def __init__(self):
+        fig, self.ax = plt.subplots(figsize=(5, 4), dpi=200)
+        super().__init__(fig)
+
+    def new(self, data, time):
+        t = np.arange(0.0, 2.0, 0.01)
+        s = np.sin(2 * np.pi * t)
+        self.ax.plot(t, s)
 
 
 class Window(QWidget):
@@ -187,21 +212,24 @@ class Window(QWidget):
         self.__pdf_button = PDFButton
         self.__slider_time = TimeSlider()
         self.__search = SearchPanel()
-        self.__input = InputDataButton()
-        self.__input.clicked.connect(self.xd2(self.__input))
-        self.__graph_button = MakeGraphButton(self.data)
-        # lol = self.__input
+        self.__plot = Plot()
+        self.input = InputDataButton()
+        self.__graph_button = MakeGraphButton(self)
         # stworzenie jakis widgetow (wywolanie fucnkji z gory)
         main_layout = QGridLayout()
         main_layout.addWidget(self.__country_box, 1, 4, 3, 1)
+        main_layout.addWidget(self.__plot, 0, 0, 3, 3)
         main_layout.addWidget(self.__graph_button, 4, 0, 1, 1)
         # main_layout.addWidget(self.__pdf_button, 4, 4, 1, 1)
         main_layout.addWidget(self.__slider_time, 4, 1, 1, 2)
         main_layout.addWidget(self.__search, 0, 4, 1, 2)
-        main_layout.addWidget(self.__input, 4, 3, 1, 1)
+        main_layout.addWidget(self.input, 4, 3, 1, 1)
         # wsadzenie tych widgetow do okna (ustawinie pozycji)
         self.setLayout(main_layout)
         self.show()
+
+    def input_clicked(self):
+        print("xd")
 
 
 if __name__ == "__main__":

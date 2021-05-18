@@ -5,13 +5,13 @@ from PyQt5.QtWidgets import QMessageBox, QWidget, QLabel, QLineEdit, QPushButton
 
 class ErrorWindow(QMessageBox):
     # okno do bledów
-    def __init__(self):
+    def __init__(self, msg):
         # jakis konstruktor
         super().__init__()
         self.setWindowTitle("Error!")
-        self.setText("ZLA NAZWA MORDECZKO")
+        self.setText(msg)
         self.setIcon(QMessageBox.Critical)
-        self.show()
+        self.exec_()
 
 
 class InputWindow(QWidget):
@@ -39,7 +39,7 @@ class InputWindow(QWidget):
         pybutton.clicked.connect(self.clickMethod)
         pybutton.resize(200, 32)
         pybutton.move(100, 100)
-        self.show()
+        self.exec_()
 
     def clickMethod(self):
         print('Your name: ' + self.line.text())
@@ -52,11 +52,8 @@ class InputWindow(QWidget):
         return self.line.text()
 
 
-
-
-
 if __name__ == "__main__":
     app = QApplication([])
 
-    window = ErrorWindow()
+    window = InputWindow()
     sys.exit(app.exec_())
