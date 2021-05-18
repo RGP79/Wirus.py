@@ -9,26 +9,38 @@ class InputData:
 
 
 class Graph(Figure):
-    def __init__(self):
+    def __init__(self, n_of_patients_in_countries):
         fig, self.ax = plt.subplots(figsize=(5, 4), dpi=200)
+        self.__n_of_patients_in_countries = n_of_patients_in_countries
         super().__init__(fig)
+        self.__graph = self.create_graph()
 
-    def display_graph(self):
-        self.__graph.show()
 
-    def create_graph(self, n_of_patients_in_countries):
-        for country, data in n_of_patients_in_countries.items():
-            self.ax.semilogy(data, label=country)
+    def create_graph(self):
+        for country, data in self.__n_of_patients_in_countries.items():
+            plt.semilogy(data, label=country)
 
-        self.ax.xlabel("Kolejne dni")
-        self.ax.ylabel("Liczba zainfekowanych")
-        self.ax.title("Liczba chorych na Covid-19 (od 01.01.2020)")
-        self.ax.grid()
-        self.ax.legend()
-        self.ax.autoscale()
+        plt.xlabel("Kolejne dni")
+        plt.ylabel("Liczba zainfekowanych")
+        plt.title("Liczba chorych na Covid-19 (od 01.01.2020)")
+        plt.grid()
+        plt.legend()
+        plt.autoscale()
+        # plt.draw()
+        return plt
+
+    def __repr__(self):
+        return self.__graph
+        #
+        # data = [random.random() for i in range(50)]
+        # ax = self.figure.add_subplot(111)
+        # ax.plot(data, 'r-')
+        # ax.set_title('PyQt Matplotlib Example')
+
 
 
     def save_graph(self):
         self.__graph.savefig("covid.pdf")
+
 
 

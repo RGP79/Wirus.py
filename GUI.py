@@ -2,14 +2,17 @@ import sys
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QLineEdit, QGroupBox, QPushButton, \
-    QHBoxLayout, QSlider, QScrollArea, QFormLayout, QLabel, QHBoxLayout, QMessageBox, QFileDialog
+    QHBoxLayout, QSlider, QScrollArea, QFormLayout, QLabel, QHBoxLayout, QSizePolicy, QMessageBox, QFileDialog
 from Graph import Graph
 from Popup_windows import InputWindow, ErrorWindow
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as Figure
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
+import random
 from matplotlib import pyplot as plt
 import numpy as np
 
 COUNTRY_COLUMN_ID = 1
+data = dict()
 
 
 class PushCountryButtons(QPushButton):
@@ -84,6 +87,9 @@ class InputDataButton(QPushButton):
         print("input")  # wywolanie classy/metody z okienkiem do inputu
         self.data = self.read_countries_data(filename, self.countries)
         print(self.data)
+        global data
+        data = self.data
+        print(data)
 
         # Plot.new([1, 2, 3, 4, 5, 6], xdd)
 
@@ -121,11 +127,16 @@ class MakeGraphButton(QPushButton):
     def __init__(self, parent: QWidget):
         super().__init__("MAKE GRAPH")
         self.__value = "MAKE GRAPH"
-        self.clicked.connect(self.__graph(parent.input.data))
+        self.__data = dict()
+        self.clicked.connect(self.__graph)
 
-    def __graph(self, lol):
-        return lambda _: print(lol)
-
+    def __graph(self):
+        self.__data = data
+        global graph
+        graph = Graph(self.__data)
+        chuj = Window()
+        # graph.show()
+        chuj.update_window_plot()
 
 class SearchPanel(QLineEdit):
     # implementajca wyszukiwarki panstw
@@ -182,15 +193,32 @@ class CountryBox(QScrollArea):
         return len(self.__n_of_countries)
 
 
-class Plot(Figure):
-    def __init__(self):
-        fig, self.ax = plt.subplots(figsize=(5, 4), dpi=200)
-        super().__init__(fig)
+class Plot(FigureCanvas):
 
-    def new(self, data, time):
-        t = np.arange(0.0, 2.0, 0.01)
-        s = np.sin(2 * np.pi * t)
-        self.ax.plot(t, s)
+    def __init__(self, parent=None, width=5, height=4, dpi=100):
+        fig = Figure(figsize=(width, height), dpi=dpi)
+        self.axes = fig.add_subplot(111)
+
+        FigureCanvas.__init__(self, fig)
+        self.setParent(parent)
+
+        FigureCanvas.setSizePolicy(self,
+                                   QSizePolicy.Expanding,
+                                   QSizePolicy.Expanding)
+        FigureCanvas.updateGeometry(self)
+        self.draw()
+        # self.plot()
+
+    def plot(self):
+        data = [random.random() for i in range(50)]
+        ax = self.figure.add_subplot(111)
+        ax.plot(data, 'r-')
+        ax.set_title('PyQt Matplotlib Example')
+        self.draw()
+
+    # def create_graph(self):
+    #     self.plot()
+
 
 
 class Window(QWidget):
@@ -227,6 +255,15 @@ class Window(QWidget):
         # wsadzenie tych widgetow do okna (ustawinie pozycji)
         self.setLayout(main_layout)
         self.show()
+
+    def update_window_plot(self):
+        lol = Plot()
+        self.__plot = lol.plot()
+        self.repaint()
+        print("lol")
+
+        # main_layout = QGridLayout()
+        # main_layout.addWidget(self.__plot, 0, 0, 3, 3)
 
     def input_clicked(self):
         print("xd")
