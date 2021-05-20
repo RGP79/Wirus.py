@@ -2,22 +2,23 @@ import sys
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QLineEdit, QGroupBox, QPushButton, \
-    QHBoxLayout, QSlider, QScrollArea, QFormLayout, QLabel, QHBoxLayout, QSizePolicy, QMessageBox, QFileDialog
-from Graph import Graph
+    QHBoxLayout, QSlider, QScrollArea, QFormLayout, QLabel, QHBoxLayout, QMessageBox, QFileDialog
+from Graph import Graph, read_countries, read_countries_data
 from Popup_windows import InputWindow, ErrorWindow
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.figure import Figure
-import random
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as Figure
 from matplotlib import pyplot as plt
 import numpy as np
 
 COUNTRY_COLUMN_ID = 1
-data = dict()
+COUNTRIES_CLICKED = []
+FILENAME = None
 
 
 class PushCountryButtons(QPushButton):
     # implementacja wciskanego przycisku
-    pass
+    def __init__(self):
+        super().__init__()
+        self.ile = 0
 
 
 class PDFButton(QPushButton):
@@ -28,7 +29,7 @@ class PDFButton(QPushButton):
         self.clicked.connect(self.__PDF)
 
     def __PDF(self):
-        print(window.countries)
+        print("robie pdf")
         pass
 
 
@@ -72,54 +73,7 @@ class InputDataButton(QPushButton):
         self.countries = "Poland"
         self.filepath = None
         self.__value = "INPUT DATA"
-        self.clicked.connect(self.xd)
         self.data = None
-
-    def xd(self):
-        try:
-            filename = QFileDialog.getOpenFileName(self, "Get Data File", "*.csv")
-            print(f"{filename}")
-            self.__input(filename[0])
-        except:
-            ErrorWindow("Nie Wybrano Pliku!")
-
-    def __input(self, filename):
-        print("input")  # wywolanie classy/metody z okienkiem do inputu
-        self.data = self.read_countries_data(filename, self.countries)
-        print(self.data)
-        global data
-        data = self.data
-        print(data)
-
-        # Plot.new([1, 2, 3, 4, 5, 6], xdd)
-
-    def get_patients_as_vector(self, country_data_line):
-        n_of_unimportant_column = 4
-        if country_data_line[0:2] == ',"':
-            n_of_unimportant_column = 5
-        n_of_patients_in_time = country_data_line.split(",")[n_of_unimportant_column:]
-        n_of_patients_in_time = [int(val) for val in n_of_patients_in_time]
-
-        return n_of_patients_in_time
-
-    def read_countries_data(self, filepath, countries):
-        countries_data = dict()
-
-        with open(filepath, "r") as f:
-            for line in f:
-                if line[0] == ",":
-                    maybe_country = line.split(",")[COUNTRY_COLUMN_ID]
-                    if maybe_country in countries:
-                        line = line.strip()
-                        n_of_patients_in_time = self.get_patients_as_vector(line)
-                        countries_data[maybe_country] = n_of_patients_in_time
-        return countries_data
-
-    def get_countries(self):
-        return self.countries
-
-    def get_data(self):
-        return self.data
 
 
 class MakeGraphButton(QPushButton):
@@ -127,16 +81,10 @@ class MakeGraphButton(QPushButton):
     def __init__(self, parent: QWidget):
         super().__init__("MAKE GRAPH")
         self.__value = "MAKE GRAPH"
-        self.__data = dict()
-        self.clicked.connect(self.__graph)
 
-    def __graph(self):
-        self.__data = data
-        global graph
-        graph = Graph(self.__data)
-        chuj = Window()
-        # graph.show()
-        chuj.update_window_plot()
+    def __graph(self, lol):
+        return lambda _: print(lol)
+
 
 class SearchPanel(QLineEdit):
     # implementajca wyszukiwarki panstw
@@ -161,19 +109,29 @@ class SearchPanel(QLineEdit):
 
 class CountryBox(QScrollArea):
     # implementacja panelu z krajami (stworzenie boxa + przyciskow dla panstw)
-    def __init__(self, size):
+    def __init__(self, countries):
         super().__init__()
         self.__n_of_countries = []
-        self.__init_view(size)
+        self.__init_view(countries)
         self.pushed = []
+        self.all_countries = []
 
-    def __init_view(self, size):
+    def __init_view(self, countries):
         btn_layout = QFormLayout()
         btn_group = QGroupBox()
-
-        for i in range(size):
-            name = f"btn{i}"
+        self.all_countries = countries
+        for i in range(len(self.all_countries)):
+            name = self.all_countries[i]
             btn = QPushButton(name)  # tu trzeba zmienic na PushButton jak bedzie wiadomo jak kolorki
+            btn.setStyleSheet("QPushButton"
+                              "{"
+                              "background-color : lightblue;"
+                              "}"
+                              "QPushButton::pressed"
+                              "{"
+                              "background-color : red;"
+                              "}"
+                              )
             # btn.clicked.connect((lambda name_to_show: lambda _: print(name_to_show))(name))
             btn.clicked.connect(self.func_print_me(name))
             btn_layout.addRow(btn)
@@ -186,39 +144,33 @@ class CountryBox(QScrollArea):
         return lambda _: self.names(name)
 
     def names(self, name):
+
         self.pushed.append(name)
         print(self.pushed)
+        global COUNTRIES_CLICKED
+        COUNTRIES_CLICKED.append(name)
 
     def countries(self):
         return len(self.__n_of_countries)
 
+    def read_countries(self, filepath):
+        countries = []
+        with open(filepath, "r") as f:
+            for line in f:
+                countries = line.split("', '")
+        return countries
 
-class Plot(FigureCanvas):
 
-    def __init__(self, parent=None, width=5, height=4, dpi=100):
-        fig = Figure(figsize=(width, height), dpi=dpi)
-        self.axes = fig.add_subplot(111)
+class Plot(Figure):
+    def __init__(self):
+        fig, self.ax = plt.subplots(figsize=(5, 4), dpi=200)
+        super().__init__(fig)
+        self.new()
 
-        FigureCanvas.__init__(self, fig)
-        self.setParent(parent)
-
-        FigureCanvas.setSizePolicy(self,
-                                   QSizePolicy.Expanding,
-                                   QSizePolicy.Expanding)
-        FigureCanvas.updateGeometry(self)
-        self.draw()
-        # self.plot()
-
-    def plot(self):
-        data = [random.random() for i in range(50)]
-        ax = self.figure.add_subplot(111)
-        ax.plot(data, 'r-')
-        ax.set_title('PyQt Matplotlib Example')
-        self.draw()
-
-    # def create_graph(self):
-    #     self.plot()
-
+    def new(self):
+        t = np.arange(0.0, 2.0, 0.01)
+        s = np.sin(2 * np.pi * t)
+        self.ax.plot(t, s)
 
 
 class Window(QWidget):
@@ -226,6 +178,9 @@ class Window(QWidget):
     def __init__(self):
         super().__init__()
         self.data = dict()
+        self.__country_box = None
+        self.__plot = None
+        self.main_layout = QGridLayout()
         self.__prepare_window()
 
     def data_upload(self, Input: InputDataButton):
@@ -236,37 +191,59 @@ class Window(QWidget):
 
     def __prepare_window(self):
         # self.countries = CountryBox.countries
-        self.__country_box = CountryBox(12)
-        self.__pdf_button = PDFButton
+        self.setFixedWidth(1200)
+        self.setFixedHeight(900)
+        self.__pdf_button = PDFButton()
         self.__slider_time = TimeSlider()
         self.__search = SearchPanel()
-        self.__plot = Plot()
         self.input = InputDataButton()
+        self.input.clicked.connect(self.input_click_func())
         self.__graph_button = MakeGraphButton(self)
+        self.__graph_button.clicked.connect(self.make_graph_click_func())
         # stworzenie jakis widgetow (wywolanie fucnkji z gory)
-        main_layout = QGridLayout()
-        main_layout.addWidget(self.__country_box, 1, 4, 3, 1)
-        main_layout.addWidget(self.__plot, 0, 0, 3, 3)
-        main_layout.addWidget(self.__graph_button, 4, 0, 1, 1)
-        # main_layout.addWidget(self.__pdf_button, 4, 4, 1, 1)
-        main_layout.addWidget(self.__slider_time, 4, 1, 1, 2)
-        main_layout.addWidget(self.__search, 0, 4, 1, 2)
-        main_layout.addWidget(self.input, 4, 3, 1, 1)
+        self.main_layout.addWidget(self.__country_box, 1, 4, 3, 1)
+        self.main_layout.addWidget(self.__plot, 0, 0, 3, 3)
+        self.main_layout.addWidget(self.__graph_button, 4, 0, 1, 1)
+        self.main_layout.addWidget(self.__pdf_button, 4, 4, 1, 1)
+        self.main_layout.addWidget(self.__slider_time, 4, 1, 1, 2)
+        self.main_layout.addWidget(self.__search, 0, 4, 1, 2)
+        self.main_layout.addWidget(self.input, 4, 3, 1, 1)
         # wsadzenie tych widgetow do okna (ustawinie pozycji)
-        self.setLayout(main_layout)
+        self.setLayout(self.main_layout)
         self.show()
 
-    def update_window_plot(self):
-        lol = Plot()
-        self.__plot = lol.plot()
-        self.repaint()
-        print("lol")
-
-        # main_layout = QGridLayout()
-        # main_layout.addWidget(self.__plot, 0, 0, 3, 3)
+    def input_click_func(self):
+        return lambda _: self.input_clicked()
 
     def input_clicked(self):
-        print("xd")
+        try:
+            filename = QFileDialog.getOpenFileName(self, "Get Data File", "*.csv")
+            print(f"{filename}")
+            global FILENAME
+            FILENAME = filename[0]
+            countries = read_countries(filename[0])
+            print(countries)
+            if self.__country_box == None:
+                self.__country_box = CountryBox(countries)
+            self.main_layout.addWidget(self.__country_box, 1, 4, 3, 1)
+            self.setLayout(self.main_layout)
+            self.show()
+        except:
+            ErrorWindow("Nie Wybrano Pliku!")
+
+    def make_graph_click_func(self):
+        return lambda _: self.graph_clicked()
+
+    def graph_clicked(self):
+        try:
+            data = read_countries_data(FILENAME, COUNTRIES_CLICKED)
+            print(data)
+            self.__plot = Graph(data)
+            self.main_layout.addWidget(self.__plot, 0, 0, 3, 3)
+            self.setLayout(self.main_layout)
+            self.show()
+        except:
+            ErrorWindow("Nie wybrano Pliku lub Państw!")
 
 
 if __name__ == "__main__":

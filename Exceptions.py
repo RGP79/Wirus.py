@@ -7,9 +7,10 @@ class TooMuchCountriesError(Exception):
 
 class FileError(Exception):
     # plik nie istnieje lub ma zly format
-    def __init__(self, arg_name):
-        msg = f"Error! Cannot load a file. There is no such file as {arg_name}."
+    def __init__(self):
+        msg = f"Error! Nie wybrano Pliku!"
         super().__init__(msg)
+
 
 
 class PDFError(Exception):
