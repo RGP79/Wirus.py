@@ -27,7 +27,7 @@ def get_patients_as_vector(country_data_line):
     return n_of_patients_in_time
 
 
-def read_countries_data(filepath, countries):
+def read_countries_data(filepath, countries, start_day):
     countries_data = dict()
 
     with open(filepath, "r") as f:
@@ -37,27 +37,39 @@ def read_countries_data(filepath, countries):
                 if maybe_country in countries:
                     line = line.strip()
                     n_of_patients_in_time = get_patients_as_vector(line)
-                    countries_data[maybe_country] = n_of_patients_in_time
+                    print(len(n_of_patients_in_time))
+                    countries_data[maybe_country] = n_of_patients_in_time[start_day:]
     return countries_data
 
 
+def read_len(filepath):
+    with open(filepath, "r") as f:
+        for line in f:
+            if line[0] == ",":
+                line = line.strip()
+                country_list = get_patients_as_vector(line)
+                break
+    return len(country_list)
+
+
 class Graph(Figure):
-    def __init__(self, data):
+    def __init__(self, data, start_day):
         fig, self.ax = plt.subplots(figsize=(5, 4), dpi=200)
         super().__init__(fig)
-        self.create_graph(data)
-
+        self.create_graph(data, start_day)
 
     def display_graph(self):
         self.__graph.show()
 
-    def create_graph(self, n_of_patients_in_countries):
+    def create_graph(self, n_of_patients_in_countries, start_day):
+        x = []
+        for i in range(414 - start_day):
+            x.append(int(start_day + i + 1))
+        print(x)
         for country, data in n_of_patients_in_countries.items():
-            self.ax.semilogy(data, label=country)
+            self.ax.semilogy(x, data, label=country)
         self.ax.legend()
-
-
-
+        self.ax.set_xlim([start_day, 414])
 
     def save_graph(self):
         self.__graph.savefig("covid.pdf")
