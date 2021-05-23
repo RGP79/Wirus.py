@@ -14,6 +14,7 @@ def read_countries(filepath):
             if line[0] == ",":
                 maybe_country = line.split(",")[COUNTRY_COLUMN_ID]
                 countries.append(maybe_country)
+
     return countries
 
 
@@ -54,9 +55,10 @@ def read_len(filepath):
 
 class Graph(Figure):
     def __init__(self, data, start_day):
-        fig, self.ax = plt.subplots(figsize=(5, 4), dpi=200)
+        fig, self.ax = plt.subplots(figsize=(7, 5), dpi=200)
         super().__init__(fig)
         self.create_graph(data, start_day)
+
 
     def display_graph(self):
         self.__graph.show()
@@ -65,11 +67,13 @@ class Graph(Figure):
         x = []
         for i in range(414 - start_day):
             x.append(int(start_day + i + 1))
-        print(x)
+
         for country, data in n_of_patients_in_countries.items():
             self.ax.semilogy(x, data, label=country)
         self.ax.legend()
         self.ax.set_xlim([start_day, 414])
+        self.ax.set_title("Wykres zachorowań")
+
 
     def save_graph(self):
         self.__graph.savefig("covid.pdf")

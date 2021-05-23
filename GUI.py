@@ -8,6 +8,7 @@ from Popup_windows import InputWindow, ErrorWindow
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as Figure
 from matplotlib import pyplot as plt
 import numpy as np
+from datetime import datetime, timedelta
 
 COUNTRY_COLUMN_ID = 1
 COUNTRIES_CLICKED = []
@@ -29,7 +30,7 @@ class PushCountryButtons(QPushButton):
         if self.ile == 1:
             self.setStyleSheet("QPushButton"
                                "{"
-                               "background-color : lightblue;"
+                               "background-color : lightgreen;"
                                "}")
             self.ile = 0
         else:
@@ -68,7 +69,7 @@ class PushCountryButtons(QPushButton):
             self.ile = 0
             self.setStyleSheet("QPushButton"
                                "{"
-                               "background-color : lightblue;"
+                               "background-color : lightgreen;"
                                "}")
 
 
@@ -78,6 +79,10 @@ class PDFButton(QPushButton):
         super().__init__("EXPORT TO PDF")
         self.__value = "EXPORT TO PDF"
         self.clicked.connect(self.__PDF)
+        self.setStyleSheet("QPushButton"
+                           "{"
+                           "background-color : lightgreen;"
+                           "}")
 
     def __PDF(self):
         print("robie pdf")
@@ -102,7 +107,7 @@ class TimeSlider(QWidget):
 
         sld.valueChanged.connect(self.updateLabel)
 
-        self.label = QLabel('0', self)
+        self.label = QLabel('22-01-2020', self)
         self.label.setAlignment(Qt.AlignCenter | Qt.AlignVCenter)
         self.label.setMinimumWidth(80)
 
@@ -115,7 +120,9 @@ class TimeSlider(QWidget):
         self.setGeometry(300, 300, 350, 250)
 
     def updateLabel(self, value):
-        self.label.setText(str(value))
+        date_format = '%d-%m-%Y'
+        date = str(datetime.strptime('22-01-2020', date_format) + timedelta(value))
+        self.label.setText(date[:10])
         global START_DAY
         START_DAY = int(value)
 
@@ -123,10 +130,10 @@ class TimeSlider(QWidget):
 class InputDataButton(QPushButton):
     def __init__(self):
         super().__init__("INPUT DATA")
-        self.countries = "Poland"
-        self.filepath = None
-        self.__value = "INPUT DATA"
-        self.data = None
+        self.setStyleSheet("QPushButton"
+                           "{"
+                           "background-color : lightgreen;"
+                           "}")
 
 
 class MakeGraphButton(QPushButton):
@@ -134,9 +141,11 @@ class MakeGraphButton(QPushButton):
     def __init__(self, parent: QWidget):
         super().__init__("MAKE GRAPH")
         self.__value = "MAKE GRAPH"
+        self.setStyleSheet(("QPushButton"
+                               "{"
+                               "background-color : lightgreen;"
+                               "}"))
 
-    def __graph(self, lol):
-        return lambda _: print(lol)
 
 
 class SearchPanel(QLineEdit):
@@ -165,6 +174,7 @@ class CountryBox(QScrollArea):
         self.__init_view(countries)
         self.all_countries = []
 
+
     def __init_view(self, countries):
         btn_layout = QFormLayout()
         btn_group = QGroupBox()
@@ -190,18 +200,6 @@ class CountryBox(QScrollArea):
         return countries
 
 
-class Plot(Figure):
-    def __init__(self):
-        fig, self.ax = plt.subplots(figsize=(5, 4), dpi=200)
-        super().__init__(fig)
-        self.new()
-
-    def new(self):
-        t = np.arange(0.0, 2.0, 0.01)
-        s = np.sin(2 * np.pi * t)
-        self.ax.plot(t, s)
-
-
 class Window(QWidget):
     # stworzenie okna i dodanie paneli do niego (wywoluje wszystkie klasy przyciskow itd)
     def __init__(self):
@@ -212,6 +210,13 @@ class Window(QWidget):
         self.countries = ["Country_1", "Country_2", "Country_3", "Country_4", "Country_5"]
         self.main_layout = QGridLayout()
         self.__prepare_window()
+        self.setStyleSheet("QWidget"
+                           "{"
+                           "background-color : lightblue;"
+                           "}")
+        self.setWindowTitle("WIRUS")
+        self.setFixedHeight(900)
+        self.setFixedWidth(1700)
 
     def data_upload(self, Input: InputDataButton):
         self.data = Input
@@ -235,12 +240,12 @@ class Window(QWidget):
         self.__graph_button.clicked.connect(self.make_graph_click_func())
         self.__search.textChanged.connect(self.search_click_func())
         # stworzenie jakis widgetow (wywolanie fucnkji z gory)
-        self.main_layout.addWidget(self.__country_box, 1, 4, 3, 1)
+        self.main_layout.addWidget(self.__country_box, 1, 3, 3, 2)
         self.main_layout.addWidget(self.__plot, 0, 0, 3, 3)
         self.main_layout.addWidget(self.__graph_button, 4, 0, 1, 1)
         self.main_layout.addWidget(self.__pdf_button, 4, 4, 1, 1)
         self.main_layout.addWidget(self.__slider_time, 4, 1, 1, 2)
-        self.main_layout.addWidget(self.__search, 0, 4, 1, 2)
+        self.main_layout.addWidget(self.__search, 0, 3, 1, 2)
         self.main_layout.addWidget(self.input, 4, 3, 1, 1)
         # wsadzenie tych widgetow do okna (ustawinie pozycji)
         self.setLayout(self.main_layout)
@@ -259,7 +264,7 @@ class Window(QWidget):
             print(self.countries)
             self.main_layout.removeWidget(self.__country_box)
             self.__country_box = CountryBox(self.countries)
-            self.main_layout.addWidget(self.__country_box, 1, 4, 3, 1)
+            self.main_layout.addWidget(self.__country_box, 1, 3, 3, 2)
             self.setLayout(self.main_layout)
             data_range = read_len(filename[0])
             self.main_layout.removeWidget(self.__slider_time)
@@ -288,15 +293,14 @@ class Window(QWidget):
         return lambda _: self.search_clicked()
 
     def search_clicked(self):
-        print("lol")
+
         txt = self.__search.text()
         new = self.__search.get_btns(txt, self.countries)
-        print(new)
+
         self.main_layout.removeWidget(self.__country_box)
         self.__country_box = CountryBox(new)
-        self.main_layout.addWidget(self.__country_box, 1, 4, 3, 1)
+        self.main_layout.addWidget(self.__country_box, 1, 3, 3, 2)
         self.setLayout(self.main_layout)
-        self.show()
 
 
 if __name__ == "__main__":
