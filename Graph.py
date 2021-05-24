@@ -38,8 +38,9 @@ def read_countries_data(filepath, countries, start_day):
                 if maybe_country in countries:
                     line = line.strip()
                     n_of_patients_in_time = get_patients_as_vector(line)
-                    print(len(n_of_patients_in_time))
+
                     countries_data[maybe_country] = n_of_patients_in_time[start_day:]
+    print(countries_data)
     return countries_data
 
 
@@ -59,10 +60,6 @@ class Graph(Figure):
         super().__init__(fig)
         self.create_graph(data, start_day)
 
-
-    def display_graph(self):
-        self.__graph.show()
-
     def create_graph(self, n_of_patients_in_countries, start_day):
         x = []
         for i in range(414 - start_day):
@@ -73,7 +70,6 @@ class Graph(Figure):
         self.ax.legend()
         self.ax.set_xlim([start_day, 414])
         self.ax.set_title("Wykres zachorowań")
+        self.ax.set_xlabel("Liczba dni")
+        self.ax.set_ylabel("liczba zachorowań")
 
-
-    def save_graph(self):
-        self.__graph.savefig("covid.pdf")

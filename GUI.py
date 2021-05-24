@@ -1,13 +1,13 @@
 import sys
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QLineEdit, QGroupBox, QPushButton, \
-    QHBoxLayout, QSlider, QScrollArea, QFormLayout, QLabel, QHBoxLayout, QMessageBox, QFileDialog
+    QHBoxLayout, QSlider, QScrollArea, QFormLayout, QLabel, QHBoxLayout, QMessageBox, QFileDialog, QMainWindow, \
+    QTabWidget, QGraphicsDropShadowEffect
+from PyQt5.QtGui import *
 from Graph import Graph, read_countries, read_countries_data, read_len
-from Popup_windows import InputWindow, ErrorWindow
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as Figure
-from matplotlib import pyplot as plt
-import numpy as np
+from Popup_windows import ErrorWindow
+
 from datetime import datetime, timedelta
 
 COUNTRY_COLUMN_ID = 1
@@ -24,52 +24,57 @@ class PushCountryButtons(QPushButton):
         self.__name = name
         self.ile = 0
         self.get_color()
-        self.clicked.connect(self.func_print_me())
+        self.clicked.connect(self.func_click_me())
+        self.setFont(QFont("Arial Black", 10))
+        self.shadow = QGraphicsDropShadowEffect()
+        self.shadow.setBlurRadius(5)
+        self.shadow.setXOffset(3)
+        self.shadow.setYOffset(3)
+        self.setGraphicsEffect(self.shadow)
 
     def color(self):
         if self.ile == 1:
             self.setStyleSheet("QPushButton"
                                "{"
-                               "background-color : lightgreen;"
+                               "background-color : rgb(196,245,95);"
                                "}")
             self.ile = 0
         else:
             self.setStyleSheet("QPushButton"
                                "{"
-                               "background-color : red;"
+                               "background-color : rgb(67,220,133);"
                                "}")
             self.ile = 1
 
-    def func_print_me(self):
+    def func_click_me(self):
         return lambda _: self.names()
 
     def names(self):
-        print(self.__name)
         global COUNTRIES_CLICKED
-        print(COUNTRIES_CLICKED)
         if self.ile == 1:
             name = self.__name
             COUNTRIES_CLICKED.remove(name)
+            self.color()
         else:
-            name = self.__name
-            COUNTRIES_CLICKED.append(name)
-        print("color")
-        self.color()
-
-        print(COUNTRIES_CLICKED)
+            if len(COUNTRIES_CLICKED) < 6:
+                name = self.__name
+                COUNTRIES_CLICKED.append(name)
+                self.color()
+            else:
+                ErrorWindow("Mozna dodac maksymalnie 6 krajow!")
 
     def get_color(self):
         if self.__name in COUNTRIES_CLICKED:
             self.ile = 1
             self.setStyleSheet("QPushButton"
                                "{"
-                               "background-color : red;"
+                               "background-color : rgb(67,220,133);"
                                "}")
         else:
             self.ile = 0
             self.setStyleSheet("QPushButton"
                                "{"
-                               "background-color : lightgreen;"
+                               "background-color : rgb(196,245,95);"
                                "}")
 
 
@@ -81,7 +86,7 @@ class PDFButton(QPushButton):
         self.clicked.connect(self.__PDF)
         self.setStyleSheet("QPushButton"
                            "{"
-                           "background-color : lightgreen;"
+                           "background-color : rgb(196,245,95);"
                            "}")
 
     def __PDF(self):
@@ -110,6 +115,9 @@ class TimeSlider(QWidget):
         self.label = QLabel('22-01-2020', self)
         self.label.setAlignment(Qt.AlignCenter | Qt.AlignVCenter)
         self.label.setMinimumWidth(80)
+        self.setStyleSheet(
+            "selection-color : rgb(196,245,95);"
+        )
 
         hbox.addWidget(sld)
         hbox.addSpacing(15)
@@ -132,7 +140,7 @@ class InputDataButton(QPushButton):
         super().__init__("INPUT DATA")
         self.setStyleSheet("QPushButton"
                            "{"
-                           "background-color : lightgreen;"
+                           "background-color : rgb(196,245,95);"
                            "}")
 
 
@@ -142,10 +150,9 @@ class MakeGraphButton(QPushButton):
         super().__init__("MAKE GRAPH")
         self.__value = "MAKE GRAPH"
         self.setStyleSheet(("QPushButton"
-                               "{"
-                               "background-color : lightgreen;"
-                               "}"))
-
+                            "{"
+                            "background-color : rgb(196,245,95);"
+                            "}"))
 
 
 class SearchPanel(QLineEdit):
@@ -157,6 +164,10 @@ class SearchPanel(QLineEdit):
 
         self.line.move(80, 20)
         self.line.resize(200, 32)
+        self.setStyleSheet(("QLineEdit"
+                            "{"
+                            "background-color : White;"
+                            "}"))
 
     def get_btns(self, txt, countries):
         new = []
@@ -174,7 +185,6 @@ class CountryBox(QScrollArea):
         self.__init_view(countries)
         self.all_countries = []
 
-
     def __init_view(self, countries):
         btn_layout = QFormLayout()
         btn_group = QGroupBox()
@@ -182,22 +192,12 @@ class CountryBox(QScrollArea):
         for i in range(len(self.all_countries)):
             name = self.all_countries[i]
             btn = PushCountryButtons(name)  # tu trzeba zmienic na PushButton jak bedzie wiadomo jak kolorki
-            # btn.clicked.connect((lambda name_to_show: lambda _: print(name_to_show))(name))
+
             btn_layout.addRow(btn)
 
         btn_group.setLayout(btn_layout)
         self.setWidget(btn_group)
         self.setWidgetResizable(True)
-
-    def countries(self):
-        return len(self.__n_of_countries)
-
-    def read_countries(self, filepath):
-        countries = []
-        with open(filepath, "r") as f:
-            for line in f:
-                countries = line.split("', '")
-        return countries
 
 
 class Window(QWidget):
@@ -210,25 +210,10 @@ class Window(QWidget):
         self.countries = ["Country_1", "Country_2", "Country_3", "Country_4", "Country_5"]
         self.main_layout = QGridLayout()
         self.__prepare_window()
-        self.setStyleSheet("QWidget"
-                           "{"
-                           "background-color : lightblue;"
-                           "}")
-        self.setWindowTitle("WIRUS")
-        self.setFixedHeight(900)
-        self.setFixedWidth(1700)
-
-    def data_upload(self, Input: InputDataButton):
-        self.data = Input
-
-    def xd2(self, Input: InputDataButton):
-        return self.data_upload(Input)
 
     def __prepare_window(self):
         # self.countries = CountryBox.countries
         countries = ["Country_1", "Country_2", "Country_3", "Country_4", "Country_5"]
-        self.setFixedWidth(1200)
-        self.setFixedHeight(900)
         self.__pdf_button = PDFButton()
         self.__slider_time = TimeSlider(100)
         self.__search = SearchPanel()
@@ -257,11 +242,10 @@ class Window(QWidget):
     def input_clicked(self):
         try:
             filename = QFileDialog.getOpenFileName(self, "Get Data File", "*.csv")
-            print(f"{filename}")
+
             global FILENAME
             FILENAME = filename[0]
             self.countries = read_countries(filename[0])
-            print(self.countries)
             self.main_layout.removeWidget(self.__country_box)
             self.__country_box = CountryBox(self.countries)
             self.main_layout.addWidget(self.__country_box, 1, 3, 3, 2)
@@ -281,7 +265,7 @@ class Window(QWidget):
     def graph_clicked(self):
         try:
             data = read_countries_data(FILENAME, COUNTRIES_CLICKED, START_DAY)
-            print(data)
+
             self.__plot = Graph(data, START_DAY)
             self.main_layout.addWidget(self.__plot, 0, 0, 3, 3)
             self.setLayout(self.main_layout)
@@ -303,9 +287,31 @@ class Window(QWidget):
         self.setLayout(self.main_layout)
 
 
+class MainWindow(QMainWindow):
+
+    def __init__(self):
+        super().__init__()
+        self.__tabs = QTabWidget()
+        self.__tabs.addTab(Window(), "chorzy")
+        self.__tabs.addTab(Window(), "zdrowi")
+        self.setCentralWidget(self.__tabs)
+        self.setStyleSheet("QWidget"
+                           "{"
+                           "background-color : lightblue;"
+                           "}")
+        self.setWindowTitle("WIRUS")
+        self.setFixedHeight(900)
+        self.setFixedWidth(1700)
+        icon = QIcon()
+        icon.addFile("lewap.png", QSize(100, 100))
+        self.setWindowIcon(icon)
+        self.setIconSize(QSize(400, 400))
+        self.show()
+
+
 if __name__ == "__main__":
     app = QApplication([])
-
-    window = Window()
+    app.setStyle('Fusion')
+    window = MainWindow()
 
     sys.exit(app.exec_())
