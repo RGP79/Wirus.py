@@ -5,53 +5,82 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as Figure
 COUNTRY_COLUMN_ID = 1
 
 
-# wczytanie danych (dostaje filepath)
-def read_countries(filepath):
-    countries = []
+# wczytanie danych
+class ReadCountries:
+    def __init__(self, filepath):
+        self.__countries = []
+        self.__read_countries(filepath)
 
-    with open(filepath, "r") as f:
-        for line in f:
-            if line[0] == ",":
-                maybe_country = line.split(",")[COUNTRY_COLUMN_ID]
-                countries.append(maybe_country)
+    def __read_countries(self, filepath):
 
-    return countries
+        with open(filepath, "r") as f:
+            for line in f:
+                if line[0] == ",":
+                    maybe_country = line.split(",")[COUNTRY_COLUMN_ID]
+                    self.__countries.append(maybe_country)
 
-
-def get_patients_as_vector(country_data_line):
-    n_of_unimportant_column = 4
-    if country_data_line[0:2] == ',"':
-        n_of_unimportant_column = 5
-    n_of_patients_in_time = country_data_line.split(",")[n_of_unimportant_column:]
-    n_of_patients_in_time = [int(val) for val in n_of_patients_in_time]
-
-    return n_of_patients_in_time
+    def get_countries(self):
+        return self.__countries
 
 
-def read_countries_data(filepath, countries, start_day):
-    countries_data = dict()
+class PatientsVector:
+    def __init__(self, line):
+        self.__vector = []
+        self.__get_patients_as_vector(line)
 
-    with open(filepath, "r") as f:
-        for line in f:
-            if line[0] == ",":
-                maybe_country = line.split(",")[COUNTRY_COLUMN_ID]
-                if maybe_country in countries:
+    def __get_patients_as_vector(self, country_data_line):
+        n_of_unimportant_column = 4
+        if country_data_line[0:2] == ',"':
+            n_of_unimportant_column = 5
+        n_of_patients_in_time = country_data_line.split(",")[n_of_unimportant_column:]
+        n_of_patients_in_time = [int(val) for val in n_of_patients_in_time]
+
+        self.__vector = n_of_patients_in_time
+
+    def get_vector(self):
+        return self.__vector
+
+
+class ReadData:
+    def __init__(self, filepath, countries, start_day):
+        self.__data = []
+        self.__read_countries_data(filepath, countries, start_day)
+
+    def __read_countries_data(self, filepath, countries, start_day):
+        countries_data = dict()
+
+        with open(filepath, "r") as f:
+            for line in f:
+                if line[0] == ",":
+                    maybe_country = line.split(",")[COUNTRY_COLUMN_ID]
+                    if maybe_country in countries:
+                        line = line.strip()
+                        n_of_patients_in_time = PatientsVector(line).get_vector()
+
+                        countries_data[maybe_country] = n_of_patients_in_time[start_day:]
+
+        self.__data = countries_data
+
+    def get_data(self):
+        return self.__data
+
+
+class ReadLen:
+    def __init__(self, filepath):
+        self.__len = None
+        self.__read_len(filepath)
+
+    def __read_len(self, filepath):
+        with open(filepath, "r") as f:
+            for line in f:
+                if line[0] == ",":
                     line = line.strip()
-                    n_of_patients_in_time = get_patients_as_vector(line)
+                    country_list = PatientsVector(line).get_vector()
+                    break
+        self.__len = len(country_list)
 
-                    countries_data[maybe_country] = n_of_patients_in_time[start_day:]
-    print(countries_data)
-    return countries_data
-
-
-def read_len(filepath):
-    with open(filepath, "r") as f:
-        for line in f:
-            if line[0] == ",":
-                line = line.strip()
-                country_list = get_patients_as_vector(line)
-                break
-    return len(country_list)
+    def get_len(self):
+        return self.__len
 
 
 class Graph(Figure):
@@ -72,4 +101,3 @@ class Graph(Figure):
         self.ax.set_title("Wykres zachorowań")
         self.ax.set_xlabel("Liczba dni")
         self.ax.set_ylabel("liczba zachorowań")
-

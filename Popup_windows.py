@@ -1,4 +1,5 @@
-
+from PyQt5.QtCore import QSize
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QMessageBox
 
 
@@ -10,7 +11,7 @@ class ErrorWindow(QMessageBox):
         self.setWindowTitle("Error!")
         self.setText(msg)
         self.setIcon(QMessageBox.Critical)
+        icon = QIcon()
+        icon.addFile("lewap.png", QSize(100, 100))
+        self.setWindowIcon(icon)
         self.exec_()
-
-
-

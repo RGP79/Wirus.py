@@ -1,81 +1,23 @@
 import sys
+from enum import Enum, auto, unique
 
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QLineEdit, QGroupBox, QPushButton, \
     QHBoxLayout, QSlider, QScrollArea, QFormLayout, QLabel, QHBoxLayout, QMessageBox, QFileDialog, QMainWindow, \
     QTabWidget, QGraphicsDropShadowEffect
 from PyQt5.QtGui import *
-from Graph import Graph, read_countries, read_countries_data, read_len
+from Graph import Graph
 from Popup_windows import ErrorWindow
 
 from datetime import datetime, timedelta
 
+from Wirus.Country_box import PushCountryButtons, CountryBox
+from Wirus.Data import Data
+from Wirus.Graph import ReadCountries, ReadLen, ReadData
+from Wirus.Graph_button import MakeGraphButton
+from Wirus.SearchPanel import SearchPanel
+
 COUNTRY_COLUMN_ID = 1
-COUNTRIES_CLICKED = []
-FILENAME = None
-START_DAY = 0
-END_DAY = 100000
-
-
-class PushCountryButtons(QPushButton):
-    # implementacja wciskanego przycisku
-    def __init__(self, name):
-        super().__init__(name)
-        self.__name = name
-        self.ile = 0
-        self.get_color()
-        self.clicked.connect(self.func_click_me())
-        self.setFont(QFont("Arial Black", 10))
-        self.shadow = QGraphicsDropShadowEffect()
-        self.shadow.setBlurRadius(5)
-        self.shadow.setXOffset(3)
-        self.shadow.setYOffset(3)
-        self.setGraphicsEffect(self.shadow)
-
-    def color(self):
-        if self.ile == 1:
-            self.setStyleSheet("QPushButton"
-                               "{"
-                               "background-color : rgb(196,245,95);"
-                               "}")
-            self.ile = 0
-        else:
-            self.setStyleSheet("QPushButton"
-                               "{"
-                               "background-color : rgb(67,220,133);"
-                               "}")
-            self.ile = 1
-
-    def func_click_me(self):
-        return lambda _: self.names()
-
-    def names(self):
-        global COUNTRIES_CLICKED
-        if self.ile == 1:
-            name = self.__name
-            COUNTRIES_CLICKED.remove(name)
-            self.color()
-        else:
-            if len(COUNTRIES_CLICKED) < 6:
-                name = self.__name
-                COUNTRIES_CLICKED.append(name)
-                self.color()
-            else:
-                ErrorWindow("Mozna dodac maksymalnie 6 krajow!")
-
-    def get_color(self):
-        if self.__name in COUNTRIES_CLICKED:
-            self.ile = 1
-            self.setStyleSheet("QPushButton"
-                               "{"
-                               "background-color : rgb(67,220,133);"
-                               "}")
-        else:
-            self.ile = 0
-            self.setStyleSheet("QPushButton"
-                               "{"
-                               "background-color : rgb(196,245,95);"
-                               "}")
 
 
 class PDFButton(QPushButton):
@@ -110,7 +52,7 @@ class TimeSlider(QWidget):
         sld.setFocusPolicy(Qt.NoFocus)
         sld.setPageStep(5)
 
-        sld.valueChanged.connect(self.updateLabel)
+        sld.valueChanged.connect(self.__update_label)
 
         self.label = QLabel('22-01-2020', self)
         self.label.setAlignment(Qt.AlignCenter | Qt.AlignVCenter)
@@ -127,12 +69,11 @@ class TimeSlider(QWidget):
 
         self.setGeometry(300, 300, 350, 250)
 
-    def updateLabel(self, value):
+    def __update_label(self, value):
         date_format = '%d-%m-%Y'
         date = str(datetime.strptime('22-01-2020', date_format) + timedelta(value))
         self.label.setText(date[:10])
-        global START_DAY
-        START_DAY = int(value)
+        Data.START_DAY = int(value)
 
 
 class InputDataButton(QPushButton):
@@ -142,62 +83,6 @@ class InputDataButton(QPushButton):
                            "{"
                            "background-color : rgb(196,245,95);"
                            "}")
-
-
-class MakeGraphButton(QPushButton):
-    # przycisk do tworzenia wykresu (prawdopodobnie sie usunie go)
-    def __init__(self, parent: QWidget):
-        super().__init__("MAKE GRAPH")
-        self.__value = "MAKE GRAPH"
-        self.setStyleSheet(("QPushButton"
-                            "{"
-                            "background-color : rgb(196,245,95);"
-                            "}"))
-
-
-class SearchPanel(QLineEdit):
-    # implementajca wyszukiwarki panstw
-    def __init__(self):
-        super().__init__()
-
-        self.line = QLineEdit(self)
-
-        self.line.move(80, 20)
-        self.line.resize(200, 32)
-        self.setStyleSheet(("QLineEdit"
-                            "{"
-                            "background-color : White;"
-                            "}"))
-
-    def get_btns(self, txt, countries):
-        new = []
-        for ctn in countries:
-            if txt.upper() == ctn.upper()[0:len(txt)]:
-                new.append(ctn)
-        return new
-
-
-class CountryBox(QScrollArea):
-    # implementacja panelu z krajami (stworzenie boxa + przyciskow dla panstw)
-    def __init__(self, countries):
-        super().__init__()
-        self.__n_of_countries = []
-        self.__init_view(countries)
-        self.all_countries = []
-
-    def __init_view(self, countries):
-        btn_layout = QFormLayout()
-        btn_group = QGroupBox()
-        self.all_countries = countries
-        for i in range(len(self.all_countries)):
-            name = self.all_countries[i]
-            btn = PushCountryButtons(name)  # tu trzeba zmienic na PushButton jak bedzie wiadomo jak kolorki
-
-            btn_layout.addRow(btn)
-
-        btn_group.setLayout(btn_layout)
-        self.setWidget(btn_group)
-        self.setWidgetResizable(True)
 
 
 class Window(QWidget):
@@ -217,11 +102,11 @@ class Window(QWidget):
         self.__pdf_button = PDFButton()
         self.__slider_time = TimeSlider(100)
         self.__search = SearchPanel()
-        self.__plot = Graph(self.data, START_DAY)
+        self.__plot = Graph(self.data, Data.START_DAY)
         self.__country_box = CountryBox(countries)
         self.input = InputDataButton()
         self.input.clicked.connect(self.input_click_func())
-        self.__graph_button = MakeGraphButton(self)
+        self.__graph_button = MakeGraphButton()
         self.__graph_button.clicked.connect(self.make_graph_click_func())
         self.__search.textChanged.connect(self.search_click_func())
         # stworzenie jakis widgetow (wywolanie fucnkji z gory)
@@ -242,15 +127,16 @@ class Window(QWidget):
     def input_clicked(self):
         try:
             filename = QFileDialog.getOpenFileName(self, "Get Data File", "*.csv")
-
-            global FILENAME
-            FILENAME = filename[0]
-            self.countries = read_countries(filename[0])
+            Data.FILENAME = filename[0]
+            # global COUNTRIES_CLICKED
+            Data.COUNTRIES_CLICKED = []
+            self.countries = ReadCountries(Data.FILENAME).get_countries()
             self.main_layout.removeWidget(self.__country_box)
             self.__country_box = CountryBox(self.countries)
             self.main_layout.addWidget(self.__country_box, 1, 3, 3, 2)
             self.setLayout(self.main_layout)
-            data_range = read_len(filename[0])
+            data_range = ReadLen(Data.FILENAME).get_len()
+            print(data_range)
             self.main_layout.removeWidget(self.__slider_time)
             self.__slider_time = TimeSlider(data_range)
             self.main_layout.addWidget(self.__slider_time, 4, 1, 1, 2)
@@ -260,31 +146,22 @@ class Window(QWidget):
             ErrorWindow("Nie Wybrano Pliku!")
 
     def make_graph_click_func(self):
-        return lambda _: self.graph_clicked()
-
-    def graph_clicked(self):
-        try:
-            data = read_countries_data(FILENAME, COUNTRIES_CLICKED, START_DAY)
-
-            self.__plot = Graph(data, START_DAY)
-            self.main_layout.addWidget(self.__plot, 0, 0, 3, 3)
-            self.setLayout(self.main_layout)
-            self.show()
-        except:
-            ErrorWindow("Nie wybrano Pliku lub Państw!")
+        return lambda _: self.__graph_button.graph_clicked(self)
 
     def search_click_func(self):
-        return lambda _: self.search_clicked()
+        return lambda _: self.__search.search_clicked(self)
 
     def search_clicked(self):
 
         txt = self.__search.text()
         new = self.__search.get_btns(txt, self.countries)
-
         self.main_layout.removeWidget(self.__country_box)
         self.__country_box = CountryBox(new)
         self.main_layout.addWidget(self.__country_box, 1, 3, 3, 2)
         self.setLayout(self.main_layout)
+
+    def get_country_box(self):
+        return self.__country_box
 
 
 class MainWindow(QMainWindow):
