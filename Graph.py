@@ -1,15 +1,12 @@
 from io import BytesIO
-
 from matplotlib import pyplot as plt
-from PyQt5.QtWidgets import QWidget
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as Figure
-
-from Popup_windows import ErrorWindow
+from Data import Data
+from Exceptions import ErrorWindow
 
 COUNTRY_COLUMN_ID = 1
 
 
-# wczytanie danych
 class ReadCountries:
 
     def __init__(self, filepath):
@@ -92,13 +89,12 @@ class Graph(Figure):
     __IMG_FORMAT = "png"
 
     def __init__(self, data, start_day, type):
-        self.fig, self.ax = plt.subplots(figsize=(7, 5), dpi=200)
+        self.fig, self.ax = plt.subplots(figsize=(7, 5), dpi=150)
         super().__init__(self.fig)
         self.type = type
         self.create_graph(data, start_day)
 
     def create_graph(self, n_of_patients_in_countries, start_day):
-
         x = []
         for i in range(414 - start_day):
             x.append(int(start_day + i + 1))
@@ -118,13 +114,19 @@ class Graph(Figure):
         self.ax.set_xlabel("Liczba dni")
 
     def get_img(self):
-        print("1")
         img_data = BytesIO()
-        print("2")
         self.fig.savefig(img_data, format=self.__IMG_FORMAT)
-        print("3")
         seek_offset = 0
-        print("4")
         img_data.seek(seek_offset)
 
         return img_data
+
+def make_graph(type, parent):
+    try:
+        data = ReadData(Data.FILENAME, Data.COUNTRIES_CLICKED, Data.START_DAY).get_data()
+        plot = Graph(data, Data.START_DAY, type)
+        parent.main_layout.addWidget(plot, 0, 0, 3, 3)
+        parent.setLayout(parent.main_layout)
+        parent.show()
+    except:
+        ErrorWindow("Nie wybrano Pliku lub Państw!")

@@ -1,21 +1,16 @@
-from io import BytesIO
-
 from Data import Data
 from PyQt5.QtWidgets import QPushButton, QFileDialog
 from reportlab.lib.utils import ImageReader
 from datetime import date
-
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen.canvas import Canvas
-
 from Graph import Graph, ReadData
-from Popup_windows import ErrorWindow
+from Exceptions import ErrorWindow
 
 
 class PDFButton(QPushButton):
     __IMG_FORMAT = "png"
 
-    # implementacja przycsiku do tworzenia pdf
     def __init__(self):
         super().__init__("EXPORT TO PDF")
         self.__value = "EXPORT TO PDF"
@@ -23,23 +18,24 @@ class PDFButton(QPushButton):
         self.clicked.connect(self.__PDF)
         self.setStyleSheet("QPushButton"
                            "{"
-                           "background-color : rgb(196,245,95);"
+                           "background-color : rgb(97,150,85);"
                            "}")
 
     def __PDF(self):
-        data = ReadData(Data.FILENAME, Data.COUNTRIES_CLICKED, Data.START_DAY).get_data()
-        plot = Graph(data, Data.START_DAY, "chorzy")
+        try:
+            data = ReadData(Data.FILENAME, Data.COUNTRIES_CLICKED, Data.START_DAY).get_data()
+            plot = Graph(data, Data.START_DAY, "chorzy")
 
-        img_data = plot.get_img()
+            img_data = plot.get_img()
 
-        img = ImageReader(img_data)
-        filename = self.__prepare_file_chooser()
-        print(filename)
-        self.__pdf_generator.create_and_save_report(img, filename)
-        print("finish")
+            img = ImageReader(img_data)
+            filename = self.__prepare_file_chooser()
+            self.__pdf_generator.create_and_save_report(img, filename)
+        except:
+            ErrorWindow("Brak wykresu lub nazwy pliku!")
 
     def __prepare_file_chooser(self):
-        filename, _ = QFileDialog.getSaveFileName(self, "Save PDF report", filter="*.pdf")
+        filename, _ = QFileDialog.getSaveFileName(self, "Save PDF Report", filter="*.pdf")
         return filename
 
 
@@ -58,7 +54,7 @@ class PdfReportGenerator:
     def __create_pdf_template(self, filepath, img, pagesize):
         canvas = Canvas(filepath, pagesize=pagesize)
         canvas.setFont("Helvetica", 24)
-        title = "Raport dotyczacy Covid-19"
+        title = "Raport Covid-19"
 
         title_x, title_y = A4[0] / 2, A4[1] - 40
 

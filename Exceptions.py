@@ -1,27 +1,13 @@
-class TooMuchCountriesError(Exception):
-    # za duzo wybranych panstw error
-    def __init__(self):
-        msg = f"Error! "
-        super().__init__(msg)
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QMessageBox
 
 
-class FileError(Exception):
-    # plik nie istnieje lub ma zly format
-    def __init__(self):
-        msg = f"Error! Nie wybrano Pliku!"
-        super().__init__(msg)
-
-
-
-class PDFError(Exception):
-    # nie ma wczytanych danych lub wykresu do pdfa
-    def __init__(self):
-        msg = f"Error! Not enough data to make a file."
-        super().__init__(msg)
-
-
-class NoCountriesError(Exception):
-    #gdy nie ma zadnego wybranego kraju i wciskasz rob wykres
-    def __init__(self):
-        msg = f"Error! "
-        super().__init__(msg)
+class ErrorWindow(QMessageBox):
+    def __init__(self, msg):
+        super().__init__()
+        self.setWindowTitle("Error!")
+        self.setText(msg)
+        self.setIcon(QMessageBox.Critical)
+        icon = QIcon()
+        self.setWindowIcon(icon)
+        self.exec_()

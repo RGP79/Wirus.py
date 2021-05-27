@@ -1,7 +1,6 @@
 from PyQt5.QtWidgets import QPushButton
-
 from Graph import ReadData, Graph
-from Popup_windows import ErrorWindow
+from Exceptions import ErrorWindow
 from Data import Data
 
 
