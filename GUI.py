@@ -38,8 +38,6 @@ class Window(QWidget):
         self.__prepare_window()
 
     def __prepare_window(self):
-        # self.countries = CountryBox.countries
-        # countries = ["Country_1", "Country_2", "Country_3", "Country_4", "Country_5"]
         self.__pdf_button = PDFButton()
         self.__slider_time = TimeSlider(100, self, self.type)
         self.__search = SearchPanel(self, self.type)
@@ -52,7 +50,6 @@ class Window(QWidget):
         # stworzenie jakis widgetow (wywolanie fucnkji z gory)
         self.main_layout.addWidget(self.__country_box, 1, 3, 3, 2)
         self.main_layout.addWidget(self.__plot, 0, 0, 3, 3)
-        # self.main_layout.addWidget(self.__graph_button, 4, 0, 1, 1)
         self.main_layout.addWidget(self.__pdf_button, 4, 4, 1, 1)
         self.main_layout.addWidget(self.__slider_time, 4, 0, 1, 3)
         self.main_layout.addWidget(self.__search, 0, 3, 1, 2)
@@ -66,16 +63,17 @@ class Window(QWidget):
         try:
             filename = QFileDialog.getOpenFileName(self, "Get Data File", "*.csv")
             Data.FILENAME = filename[0]
-            Data.COUNTRIES_CLICKED = []
+
             self.countries = ReadCountries(Data.FILENAME).get_countries()
             self.main_layout.removeWidget(self.__country_box)
             self.__country_box = CountryBox(self.countries, self, self.type)
             self.main_layout.addWidget(self.__country_box, 1, 3, 3, 2)
-            self.setLayout(self.main_layout)
+
             data_range = ReadLen(Data.FILENAME).get_len()
             self.main_layout.removeWidget(self.__slider_time)
             self.__slider_time = TimeSlider(data_range, self, self.type)
             self.main_layout.addWidget(self.__slider_time, 4, 0, 1, 3)
+
             self.setLayout(self.main_layout)
             self.show()
         except:
