@@ -87,9 +87,10 @@ class InputDataButton(QPushButton):
 
 class Window(QWidget):
     # stworzenie okna i dodanie paneli do niego (wywoluje wszystkie klasy przyciskow itd)
-    def __init__(self):
+    def __init__(self, type):
         super().__init__()
         self.data = dict()
+        self.type = type
         self.data["Data"] = ["1"] * 414
         self.__plot = None
         self.countries = ["Country_1", "Country_2", "Country_3", "Country_4", "Country_5"]
@@ -102,11 +103,11 @@ class Window(QWidget):
         self.__pdf_button = PDFButton()
         self.__slider_time = TimeSlider(100)
         self.__search = SearchPanel()
-        self.__plot = Graph(self.data, Data.START_DAY)
+        self.__plot = Graph(self.data, Data.START_DAY, self.type)
         self.__country_box = CountryBox(countries)
         self.input = InputDataButton()
         self.input.clicked.connect(self.input_click_func())
-        self.__graph_button = MakeGraphButton()
+        self.__graph_button = MakeGraphButton(self.type)
         self.__graph_button.clicked.connect(self.make_graph_click_func())
         self.__search.textChanged.connect(self.search_click_func())
         # stworzenie jakis widgetow (wywolanie fucnkji z gory)
@@ -169,8 +170,8 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.__tabs = QTabWidget()
-        self.__tabs.addTab(Window(), "chorzy")
-        self.__tabs.addTab(Window(), "zdrowi")
+        self.__tabs.addTab(Window("chorzy"), "chorzy")
+        self.__tabs.addTab(Window("zdrowi"), "zdrowi")
         self.setCentralWidget(self.__tabs)
         self.setStyleSheet("QWidget"
                            "{"

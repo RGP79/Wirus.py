@@ -84,10 +84,11 @@ class ReadLen:
 
 
 class Graph(Figure):
-    def __init__(self, data, start_day):
+    def __init__(self, data, start_day, type):
         fig, self.ax = plt.subplots(figsize=(7, 5), dpi=200)
         super().__init__(fig)
         self.create_graph(data, start_day)
+        self.type = type
 
     def create_graph(self, n_of_patients_in_countries, start_day):
         x = []
@@ -98,6 +99,11 @@ class Graph(Figure):
             self.ax.semilogy(x, data, label=country)
         self.ax.legend()
         self.ax.set_xlim([start_day, 414])
-        self.ax.set_title("Wykres zachorowań")
+        if self.type == "chorzy":
+            self.ax.set_title("Wykres zachorowań")
+            self.ax.set_ylabel("liczba zachorowań")
+        elif self.type == "zdrowi":
+            self.ax.set_title("Wykres ozdrowień")
+            self.ax.set_ylabel("liczba ozdrowień")
         self.ax.set_xlabel("Liczba dni")
-        self.ax.set_ylabel("liczba zachorowań")
+
