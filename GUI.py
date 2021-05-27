@@ -12,12 +12,12 @@ from Popup_windows import ErrorWindow
 
 from datetime import datetime, timedelta
 
-from Wirus.Country_box import CountryBox
-from Wirus.Data import Data
-from Wirus.Graph import ReadCountries, ReadLen
-from Wirus.Graph_button import MakeGraphButton
-from Wirus.Pdf_button import PDFButton
-from Wirus.SearchPanel import SearchPanel
+from Country_box import CountryBox
+from Data import Data
+from Graph import ReadCountries, ReadLen
+from Graph_button import MakeGraphButton
+from Pdf_button import PDFButton
+from SearchPanel import SearchPanel
 
 COUNTRY_COLUMN_ID = 1
 
@@ -43,6 +43,7 @@ class TimeSlider(QWidget):
         sld.valueChanged.connect(self.__update_label)
 
         self.label = QLabel('22-01-2020', self)
+        Data.DAY = '22-01-2020'
         self.label.setAlignment(Qt.AlignCenter | Qt.AlignVCenter)
         self.label.setMinimumWidth(80)
         self.setStyleSheet(
@@ -62,6 +63,7 @@ class TimeSlider(QWidget):
         date = str(datetime.strptime('22-01-2020', date_format) + timedelta(value))
         self.label.setText(date[:10])
         Data.START_DAY = int(value)
+        Data.DAY = date[:10]
 
 
 class InputDataButton(QPushButton):
@@ -148,8 +150,8 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.__tabs = QTabWidget()
-        self.__tabs.addTab(Window("chorzy"), "chorzy")
-        self.__tabs.addTab(Window("zdrowi"), "zdrowi")
+        self.__tabs.addTab(Window("chorzy"), "Stwierdzone przypadki zachorowania")
+        self.__tabs.addTab(Window("zdrowi"), "Ozdrowienia")
         self.setCentralWidget(self.__tabs)
         self.setStyleSheet("QWidget"
                            "{"

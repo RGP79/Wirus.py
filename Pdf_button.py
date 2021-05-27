@@ -1,6 +1,6 @@
 from io import BytesIO
 
-from Wirus.Data import Data
+from Data import Data
 from PyQt5.QtWidgets import QPushButton, QFileDialog
 from reportlab.lib.utils import ImageReader
 from datetime import date
@@ -8,7 +8,8 @@ from datetime import date
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen.canvas import Canvas
 
-from Wirus.Graph import Graph, ReadData
+from Graph import Graph, ReadData
+from Popup_windows import ErrorWindow
 
 
 class PDFButton(QPushButton):
@@ -38,7 +39,7 @@ class PDFButton(QPushButton):
         print("finish")
 
     def __prepare_file_chooser(self):
-        filename, _ = QFileDialog.getSaveFileName(self, "Save PDF report", filter="All Files (*)")
+        filename, _ = QFileDialog.getSaveFileName(self, "Save PDF report", filter="*.pdf")
         return filename
 
 
@@ -46,7 +47,7 @@ class PdfReportGenerator:
 
     def __init__(self):
         self.__author = "Nobody"
-        self.__title = f"Sin(x) report ({date.today()})"
+        self.__title = f"Covid report ({date.today()})"
 
     def create_and_save_report(self, img, filepath, pagesize=A4):
         pdf_template = self.__create_pdf_template(filepath, img, pagesize)
@@ -56,13 +57,15 @@ class PdfReportGenerator:
 
     def __create_pdf_template(self, filepath, img, pagesize):
         canvas = Canvas(filepath, pagesize=pagesize)
-        canvas.setFont("Times-Roman", 40)
-        title = "Wykresik"
-        title_magic_offset, img_magic_offset = 100, 600
-        title_x, title_y = A4[0] / 2, A4[1] - title_magic_offset
-        img_x, img_y = 0, A4[1] - img_magic_offset
+        canvas.setFont("Helvetica", 24)
+        title = "Raport dotyczacy Covid-19"
+
+        title_x, title_y = A4[0] / 2, A4[1] - 40
+
+        img_x, img_y = (A4[0]-560)/2, A4[1] - 500
 
         canvas.drawCentredString(title_x, title_y, title)
+        canvas.setFont("Helvetica", 14)
+        canvas.drawString(25, A4[1]-80, f"Zakres dat: od {Data.DAY} do {Data.END_DAY}.")
         canvas.drawImage(img, img_x, img_y, 560, 400)
-        canvas.drawString(1, 1, "lewap chuju")
         return canvas

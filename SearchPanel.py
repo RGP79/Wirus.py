@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QLineEdit
 
-from Wirus.Country_box import CountryBox
+from Country_box import CountryBox
 
 
 class SearchPanel(QLineEdit):

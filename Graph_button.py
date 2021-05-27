@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import QPushButton
 
 from Graph import ReadData, Graph
 from Popup_windows import ErrorWindow
-from Wirus.Data import Data
+from Data import Data
 
 
 class MakeGraphButton(QPushButton):

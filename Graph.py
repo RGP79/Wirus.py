@@ -4,7 +4,7 @@ from matplotlib import pyplot as plt
 from PyQt5.QtWidgets import QWidget
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as Figure
 
-from Wirus.Popup_windows import ErrorWindow
+from Popup_windows import ErrorWindow
 
 COUNTRY_COLUMN_ID = 1
 
@@ -111,10 +111,10 @@ class Graph(Figure):
         self.ax.set_xlim([start_day, 414])
         if self.type == "chorzy":
             self.ax.set_title("Wykres zachorowań")
-            self.ax.set_ylabel("liczba zachorowań")
+            self.ax.set_ylabel("Liczba zachorowań")
         elif self.type == "zdrowi":
             self.ax.set_title("Wykres ozdrowień")
-            self.ax.set_ylabel("liczba ozdrowień")
+            self.ax.set_ylabel("Liczba ozdrowień")
         self.ax.set_xlabel("Liczba dni")
 
     def get_img(self):

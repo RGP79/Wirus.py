@@ -3,10 +3,10 @@ from enum import Enum, auto, unique
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QScrollArea, QFormLayout, QGroupBox, QGraphicsDropShadowEffect, QPushButton
 
-from Wirus.Data import Data
-from Wirus.Graph import ReadData, Graph
+from Data import Data
+from Graph import ReadData, Graph
 
-from Wirus.Popup_windows import ErrorWindow
+from Popup_windows import ErrorWindow
 
 
 @unique
