@@ -1,8 +1,8 @@
-from PyQt5.QtWidgets import QPushButton, QWidget
+from PyQt5.QtWidgets import QPushButton
 
 from Graph import ReadData, Graph
 from Popup_windows import ErrorWindow
-from Data import Data
+from Wirus.Data import Data
 
 
 class MakeGraphButton(QPushButton):
@@ -20,7 +20,7 @@ class MakeGraphButton(QPushButton):
         try:
             data = ReadData(Data.FILENAME, Data.COUNTRIES_CLICKED, Data.START_DAY).get_data()
             plot = Graph(data, Data.START_DAY, self.type)
-            print("jest plot")
+
             parent.main_layout.addWidget(plot, 0, 0, 3, 3)
             parent.setLayout(parent.main_layout)
             parent.show()

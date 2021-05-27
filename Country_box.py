@@ -4,6 +4,7 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QScrollArea, QFormLayout, QGroupBox, QGraphicsDropShadowEffect, QPushButton
 
 from Wirus.Data import Data
+from Wirus.Graph import ReadData, Graph
 
 from Wirus.Popup_windows import ErrorWindow
 
@@ -83,6 +84,8 @@ class PushCountryButtons(QPushButton):
             else:
                 ErrorWindow("Mozna dodac maksymalnie 6 krajow!")
         print(Data.COUNTRIES_CLICKED)
+       #wywolanie klikniecia makegraph
+
 
     def get_color(self):
         if self.__name in Data.COUNTRIES_CLICKED:

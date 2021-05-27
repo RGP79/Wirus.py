@@ -12,6 +12,6 @@ class ErrorWindow(QMessageBox):
         self.setText(msg)
         self.setIcon(QMessageBox.Critical)
         icon = QIcon()
-        icon.addFile("lewap.png", QSize(100, 100))
+
         self.setWindowIcon(icon)
         self.exec_()

@@ -1,12 +1,17 @@
+from io import BytesIO
+
 from matplotlib import pyplot as plt
 from PyQt5.QtWidgets import QWidget
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as Figure
+
+from Wirus.Popup_windows import ErrorWindow
 
 COUNTRY_COLUMN_ID = 1
 
 
 # wczytanie danych
 class ReadCountries:
+
     def __init__(self, filepath):
         self.__countries = []
         self.__read_countries(filepath)
@@ -84,20 +89,25 @@ class ReadLen:
 
 
 class Graph(Figure):
+    __IMG_FORMAT = "png"
+
     def __init__(self, data, start_day, type):
-        fig, self.ax = plt.subplots(figsize=(7, 5), dpi=200)
-        super().__init__(fig)
-        self.create_graph(data, start_day)
+        self.fig, self.ax = plt.subplots(figsize=(7, 5), dpi=200)
+        super().__init__(self.fig)
         self.type = type
+        self.create_graph(data, start_day)
 
     def create_graph(self, n_of_patients_in_countries, start_day):
+
         x = []
         for i in range(414 - start_day):
             x.append(int(start_day + i + 1))
 
         for country, data in n_of_patients_in_countries.items():
             self.ax.semilogy(x, data, label=country)
+
         self.ax.legend()
+
         self.ax.set_xlim([start_day, 414])
         if self.type == "chorzy":
             self.ax.set_title("Wykres zachorowań")
@@ -107,3 +117,14 @@ class Graph(Figure):
             self.ax.set_ylabel("liczba ozdrowień")
         self.ax.set_xlabel("Liczba dni")
 
+    def get_img(self):
+        print("1")
+        img_data = BytesIO()
+        print("2")
+        self.fig.savefig(img_data, format=self.__IMG_FORMAT)
+        print("3")
+        seek_offset = 0
+        print("4")
+        img_data.seek(seek_offset)
+
+        return img_data

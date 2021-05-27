@@ -1,39 +1,27 @@
 import sys
-from enum import Enum, auto, unique
 
 from PyQt5.QtCore import Qt, QSize
-from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QLineEdit, QGroupBox, QPushButton, \
-    QHBoxLayout, QSlider, QScrollArea, QFormLayout, QLabel, QHBoxLayout, QMessageBox, QFileDialog, QMainWindow, \
-    QTabWidget, QGraphicsDropShadowEffect
+from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QPushButton, \
+    QSlider, QLabel, QHBoxLayout, QFileDialog, QMainWindow, \
+    QTabWidget
 from PyQt5.QtGui import *
+from panel.widgets import RangeSlider
+
 from Graph import Graph
 from Popup_windows import ErrorWindow
 
 from datetime import datetime, timedelta
 
-from Wirus.Country_box import PushCountryButtons, CountryBox
+from Wirus.Country_box import CountryBox
 from Wirus.Data import Data
-from Wirus.Graph import ReadCountries, ReadLen, ReadData
+from Wirus.Graph import ReadCountries, ReadLen
 from Wirus.Graph_button import MakeGraphButton
+from Wirus.Pdf_button import PDFButton
 from Wirus.SearchPanel import SearchPanel
 
 COUNTRY_COLUMN_ID = 1
 
 
-class PDFButton(QPushButton):
-    # implementacja przycsiku do tworzenia pdf
-    def __init__(self):
-        super().__init__("EXPORT TO PDF")
-        self.__value = "EXPORT TO PDF"
-        self.clicked.connect(self.__PDF)
-        self.setStyleSheet("QPushButton"
-                           "{"
-                           "background-color : rgb(196,245,95);"
-                           "}")
-
-    def __PDF(self):
-        print("robie pdf")
-        pass
 
 
 class TimeSlider(QWidget):
@@ -89,8 +77,8 @@ class Window(QWidget):
     # stworzenie okna i dodanie paneli do niego (wywoluje wszystkie klasy przyciskow itd)
     def __init__(self, type):
         super().__init__()
-        self.data = dict()
         self.type = type
+        self.data = dict()
         self.data["Data"] = ["1"] * 414
         self.__plot = None
         self.countries = ["Country_1", "Country_2", "Country_3", "Country_4", "Country_5"]
@@ -137,7 +125,6 @@ class Window(QWidget):
             self.main_layout.addWidget(self.__country_box, 1, 3, 3, 2)
             self.setLayout(self.main_layout)
             data_range = ReadLen(Data.FILENAME).get_len()
-            print(data_range)
             self.main_layout.removeWidget(self.__slider_time)
             self.__slider_time = TimeSlider(data_range)
             self.main_layout.addWidget(self.__slider_time, 4, 1, 1, 2)
@@ -151,15 +138,6 @@ class Window(QWidget):
 
     def search_click_func(self):
         return lambda _: self.__search.search_clicked(self)
-
-    def search_clicked(self):
-
-        txt = self.__search.text()
-        new = self.__search.get_btns(txt, self.countries)
-        self.main_layout.removeWidget(self.__country_box)
-        self.__country_box = CountryBox(new)
-        self.main_layout.addWidget(self.__country_box, 1, 3, 3, 2)
-        self.setLayout(self.main_layout)
 
     def get_country_box(self):
         return self.__country_box
@@ -181,7 +159,7 @@ class MainWindow(QMainWindow):
         self.setFixedHeight(900)
         self.setFixedWidth(1700)
         icon = QIcon()
-        icon.addFile("lewap.png", QSize(100, 100))
+
         self.setWindowIcon(icon)
         self.setIconSize(QSize(400, 400))
         self.show()
