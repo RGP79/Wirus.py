@@ -89,7 +89,7 @@ class Graph(Figure):
     __IMG_FORMAT = "png"
 
     def __init__(self, data, start_day, type):
-        self.fig, self.ax = plt.subplots(figsize=(7, 5), dpi=150)
+        self.fig, self.ax = plt.subplots(figsize=(7, 5), dpi=160)
         super().__init__(self.fig)
         self.type = type
         self.create_graph(data, start_day)

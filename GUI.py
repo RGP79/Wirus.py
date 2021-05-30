@@ -99,11 +99,13 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.__tabs)
         self.setStyleSheet("QWidget"
                            "{"
-                           "background-color : lightblue;"
+                           "background-color : grey;"
                            "}")
         self.setWindowTitle("WIRUS")
-        self.setFixedHeight(750)
-        self.setFixedWidth(1275)
+        # self.setFixedHeight(750)
+        # self.setFixedWidth(1075)
+        # self.isMaximized()
+        self.centralWidget()
         icon = QIcon("lewap.png")
         self.setWindowIcon(icon)
         self.setIconSize(QSize(400, 400))
@@ -112,7 +114,7 @@ class MainWindow(QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication([])
-    app.setStyle('Oxygen')
+    # app.setStyle('Oxygen')
     window = MainWindow()
 
     sys.exit(app.exec_())

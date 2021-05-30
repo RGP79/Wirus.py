@@ -27,7 +27,6 @@ class TimeSlider(QWidget):
         sld.valueChanged.connect(self.__update_label)
 
         self.label = QLabel('22-01-2020', self)
-        Data.DAY = '22-01-2020'
         self.label.setAlignment(Qt.AlignCenter | Qt.AlignVCenter)
         self.label.setMinimumWidth(80)
         self.setStyleSheet(
