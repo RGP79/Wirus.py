@@ -63,6 +63,7 @@ class Window(QWidget):
         try:
             filename = QFileDialog.getOpenFileName(self, "Get Data File", "*.csv")
             Data.FILENAME = filename[0]
+            # print(filename[0])
 
             self.countries = ReadCountries(Data.FILENAME).get_countries()
             self.main_layout.removeWidget(self.__country_box)
