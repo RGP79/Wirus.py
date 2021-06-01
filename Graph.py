@@ -1,7 +1,6 @@
 from io import BytesIO
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as Figure
-
 from Exceptions import ErrorWindow
 
 COUNTRY_COLUMN_ID = 1
@@ -173,6 +172,7 @@ class make_graph:
             data = ReadData(self.__parent.Data.FILENAME, self.__parent.Data.COUNTRIES_CLICKED,
                             self.__parent.Data.START_DAY, self.__parent.Data.END_DAY).get_data()
             plot = Graph(data, self.__parent.Data.START_DAY, self.__type, self.__parent.Data.END_DAY)
+            self.__parent.main_layout.removeWidget(self.__parent.get_graph())
             self.__parent.main_layout.addWidget(plot, 0, 0, 4, 3)
             self.__parent.setLayout(self.__parent.main_layout)
             self.__parent.show()

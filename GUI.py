@@ -7,14 +7,13 @@ from PyQt5.QtGui import *
 from Graph import Graph
 from Exceptions import ErrorWindow
 from Country_box import CountryBox
-
 from Graph import ReadCountries, ReadLen
 from Pdf_maker import PDFButton
 from SearchPanel import SearchPanel
 from Graph import FirstDay, EndDay
 from TimeSlider import SliderWindow
 from ResetButton import ResetButton
-from Wirus_git.Wirus_clone.Data import Data
+from Data import Data
 
 COUNTRY_COLUMN_ID = 1
 
@@ -106,6 +105,9 @@ class Window(QWidget):
 
     def get_slider(self):
         return self.__slider_time
+
+    def get_graph(self):
+        return self.__plot
 
 class MainWindow(QMainWindow):
 

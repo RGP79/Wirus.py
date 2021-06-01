@@ -5,7 +5,7 @@ from Graph import make_graph
 from datetime import datetime, timedelta
 
 from Exceptions import ErrorWindow
-from Wirus_git.Wirus_clone.Graph import ReadLen
+from Graph import ReadLen
 
 
 class SliderWindow(QWidget):
@@ -24,7 +24,6 @@ class SliderWindow(QWidget):
         vbox.addWidget(upper_slider)
         self.setLayout(vbox)
         self.setGeometry(300, 300, 1000, 60)
-
 
 
 class TimeSlider(QWidget):
@@ -75,6 +74,9 @@ class LowerTimeSlider(TimeSlider):
             self.__parent.Data.START_DAY = int(value)
             self.__parent.Data.FIRST_PDF_DATE = date[:10]
             make_graph(self.__type, self.__parent)
+            if self.__parent.Data.START_DAY > self.__parent.Data.END_DAY:
+                self.sld.setValue(self.__parent.Data.END_DAY - 1)
+
         except:
             ErrorWindow("Brak wczytanego pliku!")
 
@@ -98,12 +100,17 @@ class UpperTimeSlider(TimeSlider):
             self.__parent.Data.END_DAY = self.end - int(value)
             self.__parent.Data.END_PDF_DATE = date[:10]
             make_graph(self.__type, self.__parent)
+            if self.__parent.Data.END_DAY < self.__parent.Data.START_DAY:
+                print(self.end)
+                print(self.__parent.Data.START_DAY)
+                self.sld.setValue(self.end - self.__parent.Data.START_DAY + 2)
+
         except:
             ErrorWindow("Brak wczytanego pliku!")
 
 
 class update_sliders:
-    def __init__(self, parent,type):
+    def __init__(self, parent, type):
         self.__type = type
         self.__parent = parent
         self.__cos()

@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import QPushButton
 from Graph import make_graph
 
 from Exceptions import ErrorWindow
-from Wirus_git.Wirus_clone.TimeSlider import update_sliders
+from TimeSlider import update_sliders
 
 
 class ResetButton(QPushButton):
