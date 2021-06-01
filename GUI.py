@@ -14,6 +14,7 @@ from SearchPanel import SearchPanel
 from Graph import FirstDay, EndDay
 from TimeSlider import SliderWindow
 from ResetButton import ResetButton
+
 COUNTRY_COLUMN_ID = 1
 
 
@@ -59,8 +60,6 @@ class Window(QWidget):
         self.main_layout.addWidget(self.__reset_button, 4, 5, 1, 1)
         self.main_layout.setContentsMargins(1, 1, 1, 1)
 
-
-
         # wsadzenie tych widgetow do okna (ustawinie pozycji)
         self.setLayout(self.main_layout)
         self.show()
@@ -68,8 +67,9 @@ class Window(QWidget):
     def input_clicked(self):
         try:
             filename = QFileDialog.getOpenFileName(self, "Get Data File", "*.csv")
-            Data.FILENAME = filename[0]
-            # print(filename[0])
+            if filename[0]:
+                Data.FILENAME = filename[0]
+            print(filename[0])
             EndDay(Data.FILENAME)
             FirstDay(Data.FILENAME)
             self.countries = ReadCountries(Data.FILENAME).get_countries()
@@ -86,7 +86,8 @@ class Window(QWidget):
             self.setLayout(self.main_layout)
             self.show()
         except:
-            ErrorWindow("Nie Wybrano Pliku!")
+            ErrorWindow("Brak pliku z danymi!")
+        print(Data.FILENAME)
 
     def input_click_func(self):
         return lambda _: self.input_clicked()
@@ -111,8 +112,9 @@ class MainWindow(QMainWindow):
                            "background-color : grey;"
                            "}")
         self.setWindowTitle("WIRUS")
-        # self.setFixedHeight(750)
-        # self.setFixedWidth(1075)
+        self.setFixedHeight(750)
+        self.setFixedWidth(1075)
+
         # self.isMaximized()
         self.centralWidget()
         icon = QIcon("lewap.png")
@@ -123,7 +125,7 @@ class MainWindow(QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication([])
-    # app.setStyle('Oxygen')
+    app.setStyle('Oxygen')
     window = MainWindow()
 
     sys.exit(app.exec_())

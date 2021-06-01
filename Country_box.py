@@ -19,9 +19,11 @@ class CountryBox(QScrollArea):
         self.type = type
         self.verticalScrollBar().setDisabled(False)
         self.parent = parent
+        self.all_buttons = []
         self.__n_of_countries = []
         self.__init_view(countries)
         self.all_countries = []
+
 
 
     def __init_view(self, countries):
@@ -32,6 +34,7 @@ class CountryBox(QScrollArea):
             name = self.all_countries[i]
             btn = PushCountryButtons(name, self.parent,
                                      self.type)  # tu trzeba zmienic na PushButton jak bedzie wiadomo jak kolorki
+            self.all_buttons.append(btn)
             btn_layout.addRow(btn)
 
         btn_group.setLayout(btn_layout)
@@ -77,7 +80,7 @@ class PushCountryButtons(QPushButton):
         if self.mode == Color.CLICKED:
             name = self.__name
             Data.COUNTRIES_CLICKED.remove(name)
-            self.color()
+            self.get_color()
             make_graph(self.type, self.parent)
         else:
             if len(Data.COUNTRIES_CLICKED) < 6:

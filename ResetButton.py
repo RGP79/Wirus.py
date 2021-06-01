@@ -4,6 +4,7 @@ from Data import Data
 from Exceptions import ErrorWindow
 
 
+
 class ResetButton(QPushButton):
     def __init__(self, type, parent):
         self.__type = type
@@ -20,11 +21,12 @@ class ResetButton(QPushButton):
     def __reset(self):
         try:
             Data.COUNTRIES_CLICKED = []
+            for btn in self.__parent.get_country_box().all_buttons:
+                btn.get_color()
             make_graph(self.__type, self.__parent)
             print(Data.COUNTRIES_CLICKED)
         except:
             ErrorWindow("Nie tedy drogsa")
-
 
 # class Reset:
 #     def __init__(self):
