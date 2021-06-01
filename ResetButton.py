@@ -1,8 +1,8 @@
 from PyQt5.QtWidgets import QPushButton
 from Graph import make_graph
-from Data import Data
-from Exceptions import ErrorWindow
 
+from Exceptions import ErrorWindow
+from Wirus_git.Wirus_clone.TimeSlider import update_sliders
 
 
 class ResetButton(QPushButton):
@@ -20,11 +20,12 @@ class ResetButton(QPushButton):
 
     def __reset(self):
         try:
-            Data.COUNTRIES_CLICKED = []
+            self.__parent.Data.COUNTRIES_CLICKED = []
             for btn in self.__parent.get_country_box().all_buttons:
                 btn.get_color()
             make_graph(self.__type, self.__parent)
-            print(Data.COUNTRIES_CLICKED)
+            update_sliders(self.__parent, self.__type)
+            print(self.__parent.Data.COUNTRIES_CLICKED)
         except:
             ErrorWindow("Nie tedy drogsa")
 

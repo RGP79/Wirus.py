@@ -1,4 +1,3 @@
-from Data import Data
 from PyQt5.QtWidgets import QPushButton, QFileDialog
 from reportlab.lib.utils import ImageReader
 from datetime import date
@@ -11,10 +10,11 @@ from Exceptions import ErrorWindow
 class PDFButton(QPushButton):
     __IMG_FORMAT = "png"
 
-    def __init__(self):
+    def __init__(self, parent):
         super().__init__("EXPORT TO PDF")
+        self.__parent = parent
         self.__value = "EXPORT TO PDF"
-        self.__pdf_generator = PdfReportGenerator()
+        self.__pdf_generator = PdfReportGenerator(parent)
         self.clicked.connect(self.__PDF)
         self.setStyleSheet("QPushButton"
                            "{"
@@ -23,8 +23,9 @@ class PDFButton(QPushButton):
 
     def __PDF(self):
         try:
-            data = ReadData(Data.FILENAME, Data.COUNTRIES_CLICKED, Data.START_DAY, Data.END_DAY).get_data()
-            plot = Graph(data, Data.START_DAY, "chorzy", Data.END_DAY)
+            data = ReadData(self.__parent.Data.FILENAME, self.__parent.Data.COUNTRIES_CLICKED, \
+                            self.__parent.Data.START_DAY, self.__parent.Data.END_DAY).get_data()
+            plot = Graph(data, self.__parent.Data.START_DAY, "chorzy", self.__parent.Data.END_DAY)
 
             img_data = plot.get_img()
 
@@ -41,9 +42,10 @@ class PDFButton(QPushButton):
 
 class PdfReportGenerator:
 
-    def __init__(self):
+    def __init__(self, parent):
         self.__author = "Nobody"
         self.__title = f"Covid report ({date.today()})"
+        self.__parent = parent
 
     def create_and_save_report(self, img, filepath, pagesize=A4):
         pdf_template = self.__create_pdf_template(filepath, img, pagesize)
@@ -58,10 +60,11 @@ class PdfReportGenerator:
 
         title_x, title_y = A4[0] / 2, A4[1] - 40
 
-        img_x, img_y = (A4[0]-560)/2, A4[1] - 500
+        img_x, img_y = (A4[0] - 560) / 2, A4[1] - 500
 
         canvas.drawCentredString(title_x, title_y, title)
         canvas.setFont("Helvetica", 14)
-        canvas.drawString(25, A4[1]-80, f"Zakres dat: od {Data.FIRST_PDF_DATE} do {Data.END_PDF_DATE}.")
+        canvas.drawString(25, A4[1] - 80,
+                          f"Zakres dat: od {self.__parent.Data.FIRST_PDF_DATE} do {self.__parent.Data.END_PDF_DATE}.")
         canvas.drawImage(img, img_x, img_y, 560, 400)
         return canvas

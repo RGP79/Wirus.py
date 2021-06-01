@@ -3,8 +3,9 @@ from PyQt5.QtWidgets import QWidget, QSlider, QLabel, QHBoxLayout, QVBoxLayout
 from PyQt5.QtGui import *
 from Graph import make_graph
 from datetime import datetime, timedelta
-from Data import Data
+
 from Exceptions import ErrorWindow
+from Wirus_git.Wirus_clone.Graph import ReadLen
 
 
 class SliderWindow(QWidget):
@@ -23,7 +24,7 @@ class SliderWindow(QWidget):
         vbox.addWidget(upper_slider)
         self.setLayout(vbox)
         self.setGeometry(300, 300, 1000, 60)
-        self.show()
+
 
 
 class TimeSlider(QWidget):
@@ -58,7 +59,7 @@ class TimeSlider(QWidget):
 class LowerTimeSlider(TimeSlider):
 
     def __init__(self, data_range, parent, type):
-        super().__init__(data_range, Data.FIRST_DATE)
+        super().__init__(data_range, parent.Data.FIRST_DATE)
         self.sld.valueChanged.connect(self.__update_label)
         self.__parent = parent
         self.__type = type
@@ -68,11 +69,11 @@ class LowerTimeSlider(TimeSlider):
     def __update_label(self, value):
         try:
             date_format = '%Y-%m-%d'
-            print(Data.FIRST_DATE)
-            date = str(datetime.strptime(Data.FIRST_DATE, date_format) + timedelta(value))
+            print(self.__parent.Data.FIRST_DATE)
+            date = str(datetime.strptime(self.__parent.Data.FIRST_DATE, date_format) + timedelta(value))
             self.label.setText(date[:10])
-            Data.START_DAY = int(value)
-            Data.FIRST_PDF_DATE = date[:10]
+            self.__parent.Data.START_DAY = int(value)
+            self.__parent.Data.FIRST_PDF_DATE = date[:10]
             make_graph(self.__type, self.__parent)
         except:
             ErrorWindow("Brak wczytanego pliku!")
@@ -81,7 +82,7 @@ class LowerTimeSlider(TimeSlider):
 class UpperTimeSlider(TimeSlider):
 
     def __init__(self, data_range, parent, type):
-        super().__init__(data_range, Data.LAST_DATE)
+        super().__init__(data_range, parent.Data.LAST_DATE)
         self.sld.valueChanged.connect(self.__update_label)
         self.__parent = parent
         self.end = data_range
@@ -92,10 +93,28 @@ class UpperTimeSlider(TimeSlider):
     def __update_label(self, value):
         try:
             date_format = '%Y-%m-%d'
-            date = str(datetime.strptime(Data.LAST_DATE, date_format) - timedelta(value))
+            date = str(datetime.strptime(self.__parent.Data.LAST_DATE, date_format) - timedelta(value))
             self.label.setText(date[:10])
-            Data.END_DAY = self.end - int(value)
-            Data.END_PDF_DATE = date[:10]
+            self.__parent.Data.END_DAY = self.end - int(value)
+            self.__parent.Data.END_PDF_DATE = date[:10]
             make_graph(self.__type, self.__parent)
         except:
             ErrorWindow("Brak wczytanego pliku!")
+
+
+class update_sliders:
+    def __init__(self, parent,type):
+        self.__type = type
+        self.__parent = parent
+        self.__cos()
+
+    def __cos(self):
+        try:
+            print(f"to jest end day {self.__parent.Data.END_DAY}")
+            data_range = ReadLen(self.__parent.Data.FILENAME).get_len()
+            slider = SliderWindow(data_range, self.__parent, self.__type)
+            self.__parent.main_layout.removeWidget(self.__parent.get_slider())
+            self.__parent.main_layout.addWidget(slider, 4, 0, 1, 3)
+            self.__parent.setLayout(self.__parent.main_layout)
+        except:
+            ErrorWindow("Nie wybrano Pliku lub Państw!")

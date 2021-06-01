@@ -7,13 +7,14 @@ from PyQt5.QtGui import *
 from Graph import Graph
 from Exceptions import ErrorWindow
 from Country_box import CountryBox
-from Data import Data
+
 from Graph import ReadCountries, ReadLen
 from Pdf_maker import PDFButton
 from SearchPanel import SearchPanel
 from Graph import FirstDay, EndDay
 from TimeSlider import SliderWindow
 from ResetButton import ResetButton
+from Wirus_git.Wirus_clone.Data import Data
 
 COUNTRY_COLUMN_ID = 1
 
@@ -29,9 +30,11 @@ class InputDataButton(QPushButton):
 
 class Window(QWidget):
     # stworzenie okna i dodanie paneli do niego (wywoluje wszystkie klasy przyciskow itd)
-    def __init__(self, type):
+
+    def __init__(self, type, data):
         super().__init__()
         self.type = type
+        self.Data = data
         self.data = dict()
         self.data["Data"] = ["1"] * 414
         self.__plot = None
@@ -40,10 +43,10 @@ class Window(QWidget):
         self.__prepare_window()
 
     def __prepare_window(self):
-        self.__pdf_button = PDFButton()
+        self.__pdf_button = PDFButton(self)
         self.__slider_time = SliderWindow(100, self, self.type)
         self.__search = SearchPanel(self, self.type)
-        self.__plot = Graph(self.data, Data.START_DAY, self.type, Data.END_DAY)
+        self.__plot = Graph(self.data, self.Data.START_DAY, self.type, self.Data.END_DAY)
         self.__country_box = CountryBox(self.countries, self, self.type)
         self.input = InputDataButton()
         self.input.clicked.connect(self.input_click_func())
@@ -62,32 +65,32 @@ class Window(QWidget):
 
         # wsadzenie tych widgetow do okna (ustawinie pozycji)
         self.setLayout(self.main_layout)
-        self.show()
+
 
     def input_clicked(self):
         try:
             filename = QFileDialog.getOpenFileName(self, "Get Data File", "*.csv")
             if filename[0]:
-                Data.FILENAME = filename[0]
+                self.Data.FILENAME = filename[0]
             print(filename[0])
-            EndDay(Data.FILENAME)
-            FirstDay(Data.FILENAME)
-            self.countries = ReadCountries(Data.FILENAME).get_countries()
+            EndDay(self.Data.FILENAME, self)
+            FirstDay(self.Data.FILENAME, self)
+            self.countries = ReadCountries(self.Data.FILENAME).get_countries()
             print(self.countries)
             self.main_layout.removeWidget(self.__country_box)
             self.__country_box = CountryBox(self.countries, self, self.type)
             self.main_layout.addWidget(self.__country_box, 1, 3, 3, 3)
             print("2")
-            data_range = ReadLen(Data.FILENAME).get_len()
+            data_range = ReadLen(self.Data.FILENAME).get_len()
             self.main_layout.removeWidget(self.__slider_time)
             self.__slider_time = SliderWindow(data_range, self, self.type)
             self.main_layout.addWidget(self.__slider_time, 4, 0, 1, 3)
 
             self.setLayout(self.main_layout)
-            self.show()
+
         except:
             ErrorWindow("Brak pliku z danymi!")
-        print(Data.FILENAME)
+        print(self.Data.FILENAME)
 
     def input_click_func(self):
         return lambda _: self.input_clicked()
@@ -98,14 +101,19 @@ class Window(QWidget):
     def get_country_box(self):
         return self.__country_box
 
+    def set_box(self, new):
+        self.__country_box = new
+
+    def get_slider(self):
+        return self.__slider_time
 
 class MainWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
         self.__tabs = QTabWidget()
-        self.__tabs.addTab(Window("chorzy"), "Stwierdzone przypadki zachorowania")
-        self.__tabs.addTab(Window("zdrowi"), "Ozdrowienia")
+        self.__tabs.addTab(Window("chorzy", Data()), "Stwierdzone przypadki zachorowania")
+        self.__tabs.addTab(Window("zdrowi", Data()), "Ozdrowienia")
         self.setCentralWidget(self.__tabs)
         self.setStyleSheet("QWidget"
                            "{"

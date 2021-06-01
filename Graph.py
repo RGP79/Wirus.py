@@ -1,7 +1,7 @@
 from io import BytesIO
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as Figure
-from Data import Data
+
 from Exceptions import ErrorWindow
 
 COUNTRY_COLUMN_ID = 1
@@ -45,8 +45,9 @@ class PatientsVector:
 
 class FirstDay:
 
-    def __init__(self, filepath):
+    def __init__(self, filepath, parent):
         self.__filepath = filepath
+        self.__parent = parent
         self.__get_day()
 
     def __get_day(self):
@@ -55,15 +56,16 @@ class FirstDay:
             a = line.split(",")[4]
             b = a.split("/")
             if len(b[0]) == 1:
-                Data.FIRST_DATE = f"20{b[2]}-0{b[0]}-{b[1]}"
+                self.__parent.Data.FIRST_DATE = f"20{b[2]}-0{b[0]}-{b[1]}"
             else:
-                Data.FIRST_DATE = f"20{b[2]}-{b[0]}-{b[1]}"
+                self.__parent.Data.FIRST_DATE = f"20{b[2]}-{b[0]}-{b[1]}"
 
 
 class EndDay:
 
-    def __init__(self, filepath):
+    def __init__(self, filepath, parent):
         self.__filepath = filepath
+        self.__parent = parent
         self.__get_day()
 
     def __get_day(self):
@@ -75,9 +77,9 @@ class EndDay:
             print(b)
             print(b[2][0:2])
             if len(b[0]) == 1:
-                Data.LAST_DATE = f"20{b[2][0:2]}-0{b[0]}-{b[1]}"
+                self.__parent.Data.LAST_DATE = f"20{b[2][0:2]}-0{b[0]}-{b[1]}"
             else:
-                Data.LAST_DATE = f"20{b[2][0:2]}-{b[0]}-{b[1]}"
+                self.__parent.Data.LAST_DATE = f"20{b[2][0:2]}-{b[0]}-{b[1]}"
 
 
 class ReadData:
@@ -167,9 +169,10 @@ class make_graph:
 
     def __cos(self):
         try:
-            print(f"to jest end day {Data.END_DAY}")
-            data = ReadData(Data.FILENAME, Data.COUNTRIES_CLICKED, Data.START_DAY, Data.END_DAY).get_data()
-            plot = Graph(data, Data.START_DAY, self.__type, Data.END_DAY)
+            print(f"to jest end day {self.__parent.Data.END_DAY}")
+            data = ReadData(self.__parent.Data.FILENAME, self.__parent.Data.COUNTRIES_CLICKED,
+                            self.__parent.Data.START_DAY, self.__parent.Data.END_DAY).get_data()
+            plot = Graph(data, self.__parent.Data.START_DAY, self.__type, self.__parent.Data.END_DAY)
             self.__parent.main_layout.addWidget(plot, 0, 0, 4, 3)
             self.__parent.setLayout(self.__parent.main_layout)
             self.__parent.show()

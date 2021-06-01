@@ -1,9 +1,10 @@
 class Data:
-    COUNTRIES_CLICKED = []
-    FILENAME = None
-    START_DAY = 0
-    END_DAY = 414
-    FIRST_DATE = None
-    LAST_DATE = None
-    FIRST_PDF_DATE = None
-    END_PDF_DATE = None
+    def __init__(self):
+        self.COUNTRIES_CLICKED = []
+        self.FILENAME = None
+        self.START_DAY = 0
+        self.END_DAY = 414
+        self.FIRST_DATE = None
+        self.LAST_DATE = None
+        self.FIRST_PDF_DATE = None
+        self.END_PDF_DATE = None
