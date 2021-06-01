@@ -87,6 +87,7 @@ class PushCountryButtons(QPushButton):
                 make_graph(self.type, self.parent)
             else:
                 ErrorWindow("Mozna dodac maksymalnie 6 krajow!")
+        print(Data.COUNTRIES_CLICKED)
 
     def get_color(self):
         if self.__name in Data.COUNTRIES_CLICKED:

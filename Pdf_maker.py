@@ -23,8 +23,8 @@ class PDFButton(QPushButton):
 
     def __PDF(self):
         try:
-            data = ReadData(Data.FILENAME, Data.COUNTRIES_CLICKED, Data.START_DAY).get_data()
-            plot = Graph(data, Data.START_DAY, "chorzy")
+            data = ReadData(Data.FILENAME, Data.COUNTRIES_CLICKED, Data.START_DAY, Data.END_DAY).get_data()
+            plot = Graph(data, Data.START_DAY, "chorzy", Data.END_DAY)
 
             img_data = plot.get_img()
 
@@ -62,6 +62,6 @@ class PdfReportGenerator:
 
         canvas.drawCentredString(title_x, title_y, title)
         canvas.setFont("Helvetica", 14)
-        canvas.drawString(25, A4[1]-80, f"Zakres dat: od {Data.FIRST_DATE} do {Data.END_DAY}.")
+        canvas.drawString(25, A4[1]-80, f"Zakres dat: od {Data.FIRST_PDF_DATE} do {Data.END_PDF_DATE}.")
         canvas.drawImage(img, img_x, img_y, 560, 400)
         return canvas

@@ -2,9 +2,9 @@ from PyQt5.QtCore import Qt, QRect
 from PyQt5.QtWidgets import QWidget, QSlider, QLabel, QHBoxLayout, QVBoxLayout
 from PyQt5.QtGui import *
 from Graph import make_graph
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta
 from Data import Data
-from Wirus_git.Wirus_clone.Graph import ReadLen
+from Exceptions import ErrorWindow
 
 
 class SliderWindow(QWidget):
@@ -66,13 +66,16 @@ class LowerTimeSlider(TimeSlider):
         self.sld.setSliderPosition(0)
 
     def __update_label(self, value):
-        date_format = '%Y-%m-%d'
-        print(Data.FIRST_DATE)
-        date = str(datetime.strptime(Data.FIRST_DATE, date_format) + timedelta(value))
-        self.label.setText(date[:10])
-        Data.START_DAY = int(value)
-        Data.FIRST_PDF_DATE = date[:10]
-        make_graph(self.__type, self.__parent)
+        try:
+            date_format = '%Y-%m-%d'
+            print(Data.FIRST_DATE)
+            date = str(datetime.strptime(Data.FIRST_DATE, date_format) + timedelta(value))
+            self.label.setText(date[:10])
+            Data.START_DAY = int(value)
+            Data.FIRST_PDF_DATE = date[:10]
+            make_graph(self.__type, self.__parent)
+        except:
+            ErrorWindow("Brak wczytanego pliku!")
 
 
 class UpperTimeSlider(TimeSlider):
@@ -87,9 +90,12 @@ class UpperTimeSlider(TimeSlider):
         self.sld.setInvertedAppearance(True)
 
     def __update_label(self, value):
-        date_format = '%Y-%m-%d'
-        date = str(datetime.strptime(Data.LAST_DATE, date_format) - timedelta(value))
-        self.label.setText(date[:10])
-        Data.END_DAY = self.end - int(value)
-        Data.END_PDF_DATE = date[:10]
-        make_graph(self.__type, self.__parent)
+        try:
+            date_format = '%Y-%m-%d'
+            date = str(datetime.strptime(Data.LAST_DATE, date_format) - timedelta(value))
+            self.label.setText(date[:10])
+            Data.END_DAY = self.end - int(value)
+            Data.END_PDF_DATE = date[:10]
+            make_graph(self.__type, self.__parent)
+        except:
+            ErrorWindow("Brak wczytanego pliku!")

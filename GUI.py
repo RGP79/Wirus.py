@@ -11,10 +11,9 @@ from Data import Data
 from Graph import ReadCountries, ReadLen
 from Pdf_maker import PDFButton
 from SearchPanel import SearchPanel
-from TimeSlider import TimeSlider
-from Wirus_git.Wirus_clone.Graph import FirstDay, EndDay
-from Wirus_git.Wirus_clone.TimeSlider import LowerTimeSlider, SliderWindow
-
+from Graph import FirstDay, EndDay
+from TimeSlider import SliderWindow
+from ResetButton import ResetButton
 COUNTRY_COLUMN_ID = 1
 
 
@@ -48,7 +47,7 @@ class Window(QWidget):
         self.input = InputDataButton()
         self.input.clicked.connect(self.input_click_func())
         self.__search.textChanged.connect(self.search_click_func())
-        self.__reset_button = PDFButton()
+        self.__reset_button = ResetButton(self.type, self)
 
         # stworzenie jakis widgetow (wywolanie fucnkji z gory)
         self.main_layout.addWidget(self.__country_box, 1, 3, 3, 3)
