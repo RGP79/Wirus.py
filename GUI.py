@@ -12,6 +12,8 @@ from Graph import ReadCountries, ReadLen
 from Pdf_maker import PDFButton
 from SearchPanel import SearchPanel
 from TimeSlider import TimeSlider
+from Wirus_git.Wirus_clone.Graph import FirstDay, EndDay
+from Wirus_git.Wirus_clone.TimeSlider import LowerTimeSlider, SliderWindow
 
 COUNTRY_COLUMN_ID = 1
 
@@ -39,21 +41,26 @@ class Window(QWidget):
 
     def __prepare_window(self):
         self.__pdf_button = PDFButton()
-        self.__slider_time = TimeSlider(100, self, self.type)
+        self.__slider_time = SliderWindow(100, self, self.type)
         self.__search = SearchPanel(self, self.type)
-        self.__plot = Graph(self.data, Data.START_DAY, self.type)
+        self.__plot = Graph(self.data, Data.START_DAY, self.type, Data.END_DAY)
         self.__country_box = CountryBox(self.countries, self, self.type)
         self.input = InputDataButton()
         self.input.clicked.connect(self.input_click_func())
         self.__search.textChanged.connect(self.search_click_func())
+        self.__reset_button = PDFButton()
 
         # stworzenie jakis widgetow (wywolanie fucnkji z gory)
-        self.main_layout.addWidget(self.__country_box, 1, 3, 3, 2)
-        self.main_layout.addWidget(self.__plot, 0, 0, 3, 3)
+        self.main_layout.addWidget(self.__country_box, 1, 3, 3, 3)
+        self.main_layout.addWidget(self.__plot, 0, 0, 4, 3)
         self.main_layout.addWidget(self.__pdf_button, 4, 4, 1, 1)
         self.main_layout.addWidget(self.__slider_time, 4, 0, 1, 3)
-        self.main_layout.addWidget(self.__search, 0, 3, 1, 2)
+        self.main_layout.addWidget(self.__search, 0, 3, 1, 3)
         self.main_layout.addWidget(self.input, 4, 3, 1, 1)
+        self.main_layout.addWidget(self.__reset_button, 4, 5, 1, 1)
+        self.main_layout.setContentsMargins(1, 1, 1, 1)
+
+
 
         # wsadzenie tych widgetow do okna (ustawinie pozycji)
         self.setLayout(self.main_layout)
@@ -64,15 +71,17 @@ class Window(QWidget):
             filename = QFileDialog.getOpenFileName(self, "Get Data File", "*.csv")
             Data.FILENAME = filename[0]
             # print(filename[0])
-
+            EndDay(Data.FILENAME)
+            FirstDay(Data.FILENAME)
             self.countries = ReadCountries(Data.FILENAME).get_countries()
+            print(self.countries)
             self.main_layout.removeWidget(self.__country_box)
             self.__country_box = CountryBox(self.countries, self, self.type)
-            self.main_layout.addWidget(self.__country_box, 1, 3, 3, 2)
-
+            self.main_layout.addWidget(self.__country_box, 1, 3, 3, 3)
+            print("2")
             data_range = ReadLen(Data.FILENAME).get_len()
             self.main_layout.removeWidget(self.__slider_time)
-            self.__slider_time = TimeSlider(data_range, self, self.type)
+            self.__slider_time = SliderWindow(data_range, self, self.type)
             self.main_layout.addWidget(self.__slider_time, 4, 0, 1, 3)
 
             self.setLayout(self.main_layout)

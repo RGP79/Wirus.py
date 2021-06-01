@@ -17,10 +17,12 @@ class CountryBox(QScrollArea):
     def __init__(self, countries, parent, type):
         super().__init__()
         self.type = type
+        self.verticalScrollBar().setDisabled(False)
         self.parent = parent
         self.__n_of_countries = []
         self.__init_view(countries)
         self.all_countries = []
+
 
     def __init_view(self, countries):
         btn_layout = QFormLayout()
@@ -28,7 +30,8 @@ class CountryBox(QScrollArea):
         self.all_countries = countries
         for i in range(len(self.all_countries)):
             name = self.all_countries[i]
-            btn = PushCountryButtons(name, self.parent, self.type)  # tu trzeba zmienic na PushButton jak bedzie wiadomo jak kolorki
+            btn = PushCountryButtons(name, self.parent,
+                                     self.type)  # tu trzeba zmienic na PushButton jak bedzie wiadomo jak kolorki
             btn_layout.addRow(btn)
 
         btn_group.setLayout(btn_layout)

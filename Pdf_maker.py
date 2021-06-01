@@ -62,6 +62,6 @@ class PdfReportGenerator:
 
         canvas.drawCentredString(title_x, title_y, title)
         canvas.setFont("Helvetica", 14)
-        canvas.drawString(25, A4[1]-80, f"Zakres dat: od {Data.DAY} do {Data.END_DAY}.")
+        canvas.drawString(25, A4[1]-80, f"Zakres dat: od {Data.FIRST_DATE} do {Data.END_DAY}.")
         canvas.drawImage(img, img_x, img_y, 560, 400)
         return canvas

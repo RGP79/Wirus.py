@@ -35,7 +35,7 @@ class PatientsVector:
         if country_data_line[0:2] == ',"':
             n_of_unimportant_column = 5
         n_of_patients_in_time = country_data_line.split(",")[n_of_unimportant_column:]
-        n_of_patients_in_time = [int(val) for val in n_of_patients_in_time]
+        n_of_patients_in_time = [float(val) for val in n_of_patients_in_time]
 
         self.__vector = n_of_patients_in_time
 
@@ -43,12 +43,49 @@ class PatientsVector:
         return self.__vector
 
 
-class ReadData:
-    def __init__(self, filepath, countries, start_day):
-        self.__data = []
-        self.__read_countries_data(filepath, countries, start_day)
+class FirstDay:
 
-    def __read_countries_data(self, filepath, countries, start_day):
+    def __init__(self, filepath):
+        self.__filepath = filepath
+        self.__get_day()
+
+    def __get_day(self):
+        with open(self.__filepath, "r") as f:
+            line = f.readline()
+            a = line.split(",")[4]
+            b = a.split("/")
+            if len(b[0]) == 1:
+                Data.FIRST_DATE = f"20{b[2]}-0{b[0]}-{b[1]}"
+            else:
+                Data.FIRST_DATE = f"20{b[2]}-{b[0]}-{b[1]}"
+
+
+class EndDay:
+
+    def __init__(self, filepath):
+        self.__filepath = filepath
+        self.__get_day()
+
+    def __get_day(self):
+        with open(self.__filepath, "r") as f:
+            line = f.readline()
+            data = line.split(",")
+            a = data[-1]
+            b = a.split("/")
+            print(b)
+            print(b[2][0:2])
+            if len(b[0]) == 1:
+                Data.LAST_DATE = f"20{b[2][0:2]}-0{b[0]}-{b[1]}"
+            else:
+                Data.LAST_DATE = f"20{b[2][0:2]}-{b[0]}-{b[1]}"
+
+
+class ReadData:
+    def __init__(self, filepath, countries, start_day, end_day):
+        self.__data = []
+        self.__read_countries_data(filepath, countries, start_day, end_day)
+
+    def __read_countries_data(self, filepath, countries, start_day, end_day):
         countries_data = dict()
 
         with open(filepath, "r") as f:
@@ -59,7 +96,7 @@ class ReadData:
                         line = line.strip()
                         n_of_patients_in_time = PatientsVector(line).get_vector()
 
-                        countries_data[maybe_country] = n_of_patients_in_time[start_day:]
+                        countries_data[maybe_country] = n_of_patients_in_time[start_day:end_day]
 
         self.__data = countries_data
 
@@ -88,15 +125,15 @@ class ReadLen:
 class Graph(Figure):
     __IMG_FORMAT = "png"
 
-    def __init__(self, data, start_day, type):
+    def __init__(self, data, start_day, type, end_day):
         self.fig, self.ax = plt.subplots(figsize=(7, 5), dpi=160)
         super().__init__(self.fig)
         self.type = type
-        self.create_graph(data, start_day)
+        self.create_graph(data, start_day, end_day)
 
-    def create_graph(self, n_of_patients_in_countries, start_day):
+    def create_graph(self, n_of_patients_in_countries, start_day, end_day):
         x = []
-        for i in range(414 - start_day):
+        for i in range(end_day - start_day):
             x.append(int(start_day + i + 1))
 
         for country, data in n_of_patients_in_countries.items():
@@ -104,7 +141,7 @@ class Graph(Figure):
 
         self.ax.legend()
 
-        self.ax.set_xlim([start_day, 414])
+        self.ax.set_xlim([start_day, end_day])
         if self.type == "chorzy":
             self.ax.set_title("Wykres zachorowań")
             self.ax.set_ylabel("Liczba zachorowań")
@@ -121,12 +158,20 @@ class Graph(Figure):
 
         return img_data
 
-def make_graph(type, parent):
-    try:
-        data = ReadData(Data.FILENAME, Data.COUNTRIES_CLICKED, Data.START_DAY).get_data()
-        plot = Graph(data, Data.START_DAY, type)
-        parent.main_layout.addWidget(plot, 0, 0, 3, 3)
-        parent.setLayout(parent.main_layout)
-        parent.show()
-    except:
-        ErrorWindow("Nie wybrano Pliku lub Państw!")
+
+class make_graph:
+    def __init__(self, type, parent):
+        self.__type = type
+        self.__parent = parent
+        self.__cos()
+
+    def __cos(self):
+        try:
+            print(f"to jest end day {Data.END_DAY}")
+            data = ReadData(Data.FILENAME, Data.COUNTRIES_CLICKED, Data.START_DAY, Data.END_DAY).get_data()
+            plot = Graph(data, Data.START_DAY, self.__type, Data.END_DAY)
+            self.__parent.main_layout.addWidget(plot, 0, 0, 4, 3)
+            self.__parent.setLayout(self.__parent.main_layout)
+            self.__parent.show()
+        except:
+            ErrorWindow("Nie wybrano Pliku lub Państw!")
