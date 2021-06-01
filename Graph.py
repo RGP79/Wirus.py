@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from io import BytesIO
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as Figure
@@ -83,7 +84,7 @@ class EndDay:
 
 class ReadData:
     def __init__(self, filepath, countries, start_day, end_day):
-        self.__data = []
+        self.__data = dict()
         self.__read_countries_data(filepath, countries, start_day, end_day)
 
     def __read_countries_data(self, filepath, countries, start_day, end_day):
@@ -100,6 +101,10 @@ class ReadData:
                         countries_data[maybe_country] = n_of_patients_in_time[start_day:end_day]
 
         self.__data = countries_data
+        if len(countries) < 1:
+            ghost_data = dict()
+            ghost_data["Data"] = ["1"] * (end_day - start_day)
+            self.__data = ghost_data
 
     def get_data(self):
         return self.__data
@@ -126,16 +131,18 @@ class ReadLen:
 class Graph(Figure):
     __IMG_FORMAT = "png"
 
-    def __init__(self, data, start_day, type, end_day):
+    def __init__(self, data, start_day, end_day, parent):
         self.fig, self.ax = plt.subplots(figsize=(7, 5), dpi=160)
         super().__init__(self.fig)
-        self.type = type
+        self.type = parent.get_type()
+        self.__parent = parent
         self.create_graph(data, start_day, end_day)
 
     def create_graph(self, n_of_patients_in_countries, start_day, end_day):
+        print(n_of_patients_in_countries)
         x = []
         for i in range(end_day - start_day):
-            x.append(int(start_day + i + 1))
+            x.append(start_day + i)
 
         for country, data in n_of_patients_in_countries.items():
             self.ax.semilogy(x, data, label=country)
@@ -161,8 +168,8 @@ class Graph(Figure):
 
 
 class make_graph:
-    def __init__(self, type, parent):
-        self.__type = type
+    def __init__(self, parent):
+        self.__type = parent.get_type()
         self.__parent = parent
         self.__cos()
 
@@ -171,10 +178,10 @@ class make_graph:
             print(f"to jest end day {self.__parent.Data.END_DAY}")
             data = ReadData(self.__parent.Data.FILENAME, self.__parent.Data.COUNTRIES_CLICKED,
                             self.__parent.Data.START_DAY, self.__parent.Data.END_DAY).get_data()
-            plot = Graph(data, self.__parent.Data.START_DAY, self.__type, self.__parent.Data.END_DAY)
+            plot = Graph(data, self.__parent.Data.START_DAY, self.__parent.Data.END_DAY, self.__parent)
             self.__parent.main_layout.removeWidget(self.__parent.get_graph())
             self.__parent.main_layout.addWidget(plot, 0, 0, 4, 3)
             self.__parent.setLayout(self.__parent.main_layout)
-            self.__parent.show()
+
         except:
             ErrorWindow("Nie wybrano Pliku lub Państw!")

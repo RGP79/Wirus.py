@@ -14,6 +14,7 @@ from Graph import FirstDay, EndDay
 from TimeSlider import SliderWindow
 from ResetButton import ResetButton
 from Data import Data
+from Wirus_git.Wirus_clone.Look_Config import Config
 
 COUNTRY_COLUMN_ID = 1
 
@@ -21,10 +22,7 @@ COUNTRY_COLUMN_ID = 1
 class InputDataButton(QPushButton):
     def __init__(self):
         super().__init__("INPUT DATA")
-        self.setStyleSheet("QPushButton"
-                           "{"
-                           "background-color : rgb(97,150,85);"
-                           "}")
+        self.setStyleSheet(Config.INPUT_BTN)
 
 
 class Window(QWidget):
@@ -43,14 +41,14 @@ class Window(QWidget):
 
     def __prepare_window(self):
         self.__pdf_button = PDFButton(self)
-        self.__slider_time = SliderWindow(100, self, self.type)
-        self.__search = SearchPanel(self, self.type)
-        self.__plot = Graph(self.data, self.Data.START_DAY, self.type, self.Data.END_DAY)
-        self.__country_box = CountryBox(self.countries, self, self.type)
+        self.__slider_time = SliderWindow(100, self)
+        self.__search = SearchPanel(self)
+        self.__plot = Graph(self.data, self.Data.START_DAY, self.Data.END_DAY, self)
+        self.__country_box = CountryBox(self.countries, self)
         self.input = InputDataButton()
         self.input.clicked.connect(self.input_click_func())
         self.__search.textChanged.connect(self.search_click_func())
-        self.__reset_button = ResetButton(self.type, self)
+        self.__reset_button = ResetButton(self)
 
         # stworzenie jakis widgetow (wywolanie fucnkji z gory)
         self.main_layout.addWidget(self.__country_box, 1, 3, 3, 3)
@@ -65,7 +63,6 @@ class Window(QWidget):
         # wsadzenie tych widgetow do okna (ustawinie pozycji)
         self.setLayout(self.main_layout)
 
-
     def input_clicked(self):
         try:
             filename = QFileDialog.getOpenFileName(self, "Get Data File", "*.csv")
@@ -77,12 +74,12 @@ class Window(QWidget):
             self.countries = ReadCountries(self.Data.FILENAME).get_countries()
             print(self.countries)
             self.main_layout.removeWidget(self.__country_box)
-            self.__country_box = CountryBox(self.countries, self, self.type)
+            self.__country_box = CountryBox(self.countries, self)
             self.main_layout.addWidget(self.__country_box, 1, 3, 3, 3)
             print("2")
             data_range = ReadLen(self.Data.FILENAME).get_len()
             self.main_layout.removeWidget(self.__slider_time)
-            self.__slider_time = SliderWindow(data_range, self, self.type)
+            self.__slider_time = SliderWindow(data_range, self)
             self.main_layout.addWidget(self.__slider_time, 4, 0, 1, 3)
 
             self.setLayout(self.main_layout)
@@ -109,6 +106,10 @@ class Window(QWidget):
     def get_graph(self):
         return self.__plot
 
+    def get_type(self):
+        return self.type
+
+
 class MainWindow(QMainWindow):
 
     def __init__(self):
@@ -117,10 +118,7 @@ class MainWindow(QMainWindow):
         self.__tabs.addTab(Window("chorzy", Data()), "Stwierdzone przypadki zachorowania")
         self.__tabs.addTab(Window("zdrowi", Data()), "Ozdrowienia")
         self.setCentralWidget(self.__tabs)
-        self.setStyleSheet("QWidget"
-                           "{"
-                           "background-color : grey;"
-                           "}")
+        self.setStyleSheet(Config.BACKGROUND_COLOR)
         self.setWindowTitle("WIRUS")
         self.setFixedHeight(750)
         self.setFixedWidth(1075)
@@ -135,7 +133,7 @@ class MainWindow(QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication([])
-    app.setStyle('Oxygen')
+    app.setStyle(Config.WINDOW_STYLE)
     window = MainWindow()
 
     sys.exit(app.exec_())

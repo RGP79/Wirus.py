@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QScrollArea, QFormLayout, QGroupBox, QGraphicsDropSh
 
 from Graph import make_graph
 from Exceptions import ErrorWindow
+from Wirus_git.Wirus_clone.Look_Config import Config
 
 
 @unique
@@ -14,9 +15,9 @@ class Color(Enum):
 
 class CountryBox(QScrollArea):
     # implementacja panelu z krajami (stworzenie boxa + przyciskow dla panstw)
-    def __init__(self, countries, parent, type):
+    def __init__(self, countries, parent):
         super().__init__()
-        self.type = type
+        self.type = parent.get_type()
         self.verticalScrollBar().setDisabled(False)
         self.parent = parent
         self.all_buttons = []
@@ -24,16 +25,14 @@ class CountryBox(QScrollArea):
         self.__init_view(countries)
         self.all_countries = []
 
-
-
     def __init_view(self, countries):
         btn_layout = QFormLayout()
         btn_group = QGroupBox()
         self.all_countries = countries
         for i in range(len(self.all_countries)):
             name = self.all_countries[i]
-            btn = PushCountryButtons(name, self.parent,
-                                     self.type)  # tu trzeba zmienic na PushButton jak bedzie wiadomo jak kolorki
+            btn = PushCountryButtons(name, self.parent
+                                     )  # tu trzeba zmienic na PushButton jak bedzie wiadomo jak kolorki
             self.all_buttons.append(btn)
             btn_layout.addRow(btn)
 
@@ -43,10 +42,10 @@ class CountryBox(QScrollArea):
 
 
 class PushCountryButtons(QPushButton):
-    def __init__(self, name, parent, type):
+    def __init__(self, name, parent):
         super().__init__(name)
         self.__name = name
-        self.type = type
+        self.type = parent.get_type()
         self.parent = parent
         self.mode = Color.NOT_CLICKED
         self.get_color()
@@ -60,16 +59,10 @@ class PushCountryButtons(QPushButton):
 
     def color(self):
         if self.mode == Color.CLICKED:
-            self.setStyleSheet("QPushButton"
-                               "{"
-                               "background-color : lightblue;"
-                               "}")
+            self.setStyleSheet(Config.COUNTRY_BTN_UNCLICKED)
             self.mode = Color.NOT_CLICKED
         else:
-            self.setStyleSheet("QPushButton"
-                               "{"
-                               "background-color : lightblue;"
-                               "}")
+            self.setStyleSheet(Config.COUNTRY_BTN_CLICKED)
             self.mode = Color.CLICKED
 
     def func_click_me(self):
@@ -81,13 +74,13 @@ class PushCountryButtons(QPushButton):
             name = self.__name
             self.parent.Data.COUNTRIES_CLICKED.remove(name)
             self.get_color()
-            make_graph(self.type, self.parent)
+            make_graph(self.parent)
         else:
             if len(self.parent.Data.COUNTRIES_CLICKED) < 6:
                 name = self.__name
                 self.parent.Data.COUNTRIES_CLICKED.append(name)
                 self.get_color()
-                make_graph(self.type, self.parent)
+                make_graph(self.parent)
             else:
                 ErrorWindow("Mozna dodac maksymalnie 6 krajow!")
         print(self.parent.Data.COUNTRIES_CLICKED)
@@ -95,13 +88,7 @@ class PushCountryButtons(QPushButton):
     def get_color(self):
         if self.__name in self.parent.Data.COUNTRIES_CLICKED:
             self.mode = Color.CLICKED
-            self.setStyleSheet("QPushButton"
-                               "{"
-                               "background-color : rgb(97,150,85);"
-                               "}")
+            self.setStyleSheet(Config.COUNTRY_BTN_CLICKED)
         else:
             self.mode = Color.NOT_CLICKED
-            self.setStyleSheet("QPushButton"
-                               "{"
-                               "background-color : lightblue;"
-                               "}")
+            self.setStyleSheet(Config.COUNTRY_BTN_UNCLICKED)
