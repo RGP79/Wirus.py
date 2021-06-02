@@ -1,12 +1,11 @@
 from PyQt5.QtCore import Qt, QRect
 from PyQt5.QtWidgets import QWidget, QSlider, QLabel, QHBoxLayout, QVBoxLayout
 from PyQt5.QtGui import *
-from Graph import make_graph
+from Graph import UpdateGraph
 from datetime import datetime, timedelta
-
 from Exceptions import ErrorWindow
-from Graph import ReadLen
-from Wirus_git.Wirus_clone.Look_Config import Config
+from File_service import ReadLen
+from Look_Config import Config
 
 
 class SliderWindow(QWidget):
@@ -72,7 +71,7 @@ class LowerTimeSlider(TimeSlider):
             self.label.setText(date[:10])
             self.__parent.Data.START_DAY = int(value)
             self.__parent.Data.FIRST_PDF_DATE = date[:10]
-            make_graph(self.__parent)
+            UpdateGraph(self.__parent)
             if self.__parent.Data.START_DAY > self.__parent.Data.END_DAY:
                 self.sld.setValue(self.__parent.Data.END_DAY - 3)
 
@@ -98,7 +97,7 @@ class UpperTimeSlider(TimeSlider):
             self.label.setText(date[:10])
             self.__parent.Data.END_DAY = self.end - int(value)
             self.__parent.Data.END_PDF_DATE = date[:10]
-            make_graph(self.__parent)
+            UpdateGraph(self.__parent)
             if self.__parent.Data.END_DAY < self.__parent.Data.START_DAY:
                 print(self.end)
                 print(self.__parent.Data.START_DAY)
@@ -108,13 +107,13 @@ class UpperTimeSlider(TimeSlider):
             ErrorWindow("Brak wczytanego pliku!")
 
 
-class update_sliders:
+class UpdateSliders:
     def __init__(self, parent):
         self.__type = parent.get_type()
         self.__parent = parent
-        self.__cos()
+        self.__update()
 
-    def __cos(self):
+    def __update(self):
         try:
             print(f"to jest end day {self.__parent.Data.END_DAY}")
             data_range = ReadLen(self.__parent.Data.FILENAME).get_len()
@@ -123,4 +122,4 @@ class update_sliders:
             self.__parent.main_layout.addWidget(slider, 4, 0, 1, 3)
             self.__parent.setLayout(self.__parent.main_layout)
         except:
-            ErrorWindow("Nie wybrano Pliku lub Państw!")
+            ErrorWindow("Nie wybrano pliku lub państw!")

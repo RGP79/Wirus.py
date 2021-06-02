@@ -7,16 +7,13 @@ from PyQt5.QtGui import *
 from Graph import Graph
 from Exceptions import ErrorWindow
 from Country_box import CountryBox
-from Graph import ReadCountries, ReadLen
+from File_service import ReadCountries, ReadLen, FirstDay, EndDay
 from Pdf_maker import PDFButton
 from SearchPanel import SearchPanel
-from Graph import FirstDay, EndDay
 from TimeSlider import SliderWindow
 from ResetButton import ResetButton
 from Data import Data
-from Wirus_git.Wirus_clone.Look_Config import Config
-
-COUNTRY_COLUMN_ID = 1
+from Look_Config import Config
 
 
 class InputDataButton(QPushButton):
@@ -33,7 +30,7 @@ class Window(QWidget):
         self.type = type
         self.Data = data
         self.data = dict()
-        self.data["Data"] = ["1"] * 414
+        self.data["Data"] = ["1"]
         self.__plot = None
         self.countries = []
         self.main_layout = QGridLayout()
@@ -120,8 +117,8 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.__tabs)
         self.setStyleSheet(Config.BACKGROUND_COLOR)
         self.setWindowTitle("WIRUS")
-        self.setFixedHeight(750)
-        self.setFixedWidth(1075)
+        # self.setFixedHeight(750)
+        # self.setFixedWidth(1075)
 
         # self.isMaximized()
         self.centralWidget()

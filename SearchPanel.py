@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QLineEdit
 from Country_box import CountryBox
-from Wirus_git.Wirus_clone.Look_Config import Config
+from Look_Config import Config
 
 
 class SearchPanel(QLineEdit):

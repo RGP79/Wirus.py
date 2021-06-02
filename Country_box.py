@@ -1,10 +1,9 @@
 from enum import Enum, auto, unique
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QScrollArea, QFormLayout, QGroupBox, QGraphicsDropShadowEffect, QPushButton
-
-from Graph import make_graph
+from Graph import UpdateGraph
 from Exceptions import ErrorWindow
-from Wirus_git.Wirus_clone.Look_Config import Config
+from Look_Config import Config
 
 
 @unique
@@ -74,13 +73,13 @@ class PushCountryButtons(QPushButton):
             name = self.__name
             self.parent.Data.COUNTRIES_CLICKED.remove(name)
             self.get_color()
-            make_graph(self.parent)
+            UpdateGraph(self.parent)
         else:
             if len(self.parent.Data.COUNTRIES_CLICKED) < 6:
                 name = self.__name
                 self.parent.Data.COUNTRIES_CLICKED.append(name)
                 self.get_color()
-                make_graph(self.parent)
+                UpdateGraph(self.parent)
             else:
                 ErrorWindow("Mozna dodac maksymalnie 6 krajow!")
         print(self.parent.Data.COUNTRIES_CLICKED)

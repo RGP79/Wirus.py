@@ -1,11 +1,10 @@
 from PyQt5.QtWidgets import QPushButton, QFileDialog
 from reportlab.lib.utils import ImageReader
-from datetime import date
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen.canvas import Canvas
 from Graph import Graph, ReadData
 from Exceptions import ErrorWindow
-from Wirus_git.Wirus_clone.Look_Config import Config
+from Look_Config import Config
 
 
 class PDFButton(QPushButton):
