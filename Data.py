@@ -8,3 +8,4 @@ class Data:
         self.LAST_DATE = None
         self.FIRST_PDF_DATE = None
         self.END_PDF_DATE = None
+

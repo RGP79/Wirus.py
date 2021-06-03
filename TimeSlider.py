@@ -66,13 +66,13 @@ class LowerTimeSlider(TimeSlider):
     def __update_label(self, value):
         try:
             date_format = '%Y-%m-%d'
-            print(self.__parent.Data.FIRST_DATE)
+            print(f"value lower -> {value}")
             date = str(datetime.strptime(self.__parent.Data.FIRST_DATE, date_format) + timedelta(value))
             self.label.setText(date[:10])
             self.__parent.Data.START_DAY = int(value)
             self.__parent.Data.FIRST_PDF_DATE = date[:10]
             UpdateGraph(self.__parent)
-            if self.__parent.Data.START_DAY > self.__parent.Data.END_DAY:
+            if self.__parent.Data.START_DAY-3 > self.__parent.Data.END_DAY:
                 self.sld.setValue(self.__parent.Data.END_DAY - 3)
 
         except:
@@ -93,6 +93,7 @@ class UpperTimeSlider(TimeSlider):
     def __update_label(self, value):
         try:
             date_format = '%Y-%m-%d'
+            print(f"value upper -> {value}")
             date = str(datetime.strptime(self.__parent.Data.LAST_DATE, date_format) - timedelta(value))
             self.label.setText(date[:10])
             self.__parent.Data.END_DAY = self.end - int(value)
@@ -119,7 +120,7 @@ class UpdateSliders:
             data_range = ReadLen(self.__parent.Data.FILENAME).get_len()
             slider = SliderWindow(data_range, self.__parent)
             self.__parent.main_layout.removeWidget(self.__parent.get_slider())
-            self.__parent.main_layout.addWidget(slider, 4, 0, 1, 3)
+            self.__parent.main_layout.addWidget(slider, 4, 0, 1, 4)
             self.__parent.setLayout(self.__parent.main_layout)
         except:
             ErrorWindow("Nie wybrano pliku lub państw!")

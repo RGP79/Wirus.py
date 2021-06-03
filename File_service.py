@@ -10,10 +10,19 @@ class ReadCountries:
     def __read_countries(self, filepath):
 
         with open(filepath, "r") as f:
+            f.readline()
             for line in f:
+                maybe_country = line.split(",")[1]
                 if line[0] == ",":
-                    maybe_country = line.split(",")[COUNTRY_COLUMN_ID]
+
                     self.__countries.append(maybe_country)
+                else:
+                    if maybe_country not in self.__countries:
+                        self.__countries.append(maybe_country)
+                    one = line.split(",")[0]
+                    two = line.split(",")[1]
+                    region = f"{one} ({two})"
+                    self.__countries.append(region)
 
     def get_countries(self):
         return self.__countries
@@ -70,6 +79,7 @@ class EndDay:
             b = a.split("/")
             print(b)
             print(b[2][0:2])
+            self.__parent.Data.END_DAY = ReadLen(self.__filepath).get_len()
             if len(b[0]) == 1:
                 self.__parent.Data.LAST_DATE = f"20{b[2][0:2]}-0{b[0]}-{b[1]}"
             else:
@@ -83,22 +93,38 @@ class ReadData:
 
     def __read_countries_data(self, filepath, countries, start_day, end_day):
         countries_data = dict()
-
-        with open(filepath, "r") as f:
-            for line in f:
-                if line[0] == ",":
-                    maybe_country = line.split(",")[COUNTRY_COLUMN_ID]
-                    if maybe_country in countries:
-                        line = line.strip()
-                        n_of_patients_in_time = PatientsVector(line).get_vector()
-
-                        countries_data[maybe_country] = n_of_patients_in_time[start_day:end_day]
-
-        self.__data = countries_data
         if len(countries) < 1:
             ghost_data = dict()
             ghost_data["Data"] = ["1"] * (end_day - start_day)
             self.__data = ghost_data
+        else:
+            with open(filepath, "r") as f:
+                for line in f:
+                    maybe_country = line.split(",")[1]
+                    if maybe_country in countries:
+                        line = line.strip()
+                        n_of_patients_in_time = PatientsVector(line).get_vector()
+                        if maybe_country in countries_data.keys():
+                            old = countries_data[maybe_country]
+                            new = n_of_patients_in_time[start_day:end_day]
+                            for i in range(len(old)):
+                                old[i] = old[i] + new[i]
+                            countries_data[maybe_country] = old
+                        else:
+                            countries_data[maybe_country] = n_of_patients_in_time[start_day:end_day]
+
+                    one = line.split(",")[0]
+                    two = line.split(",")[1]
+                    maybe_region = f"{one} ({two})"
+                    if maybe_region in countries:
+                        line = line.strip()
+                        n_of_patients_in_time = PatientsVector(line).get_vector()
+                        countries_data[maybe_region] = n_of_patients_in_time[start_day:end_day]
+            self.__data = countries_data
+            if len(countries) < 1:
+                ghost_data = dict()
+                ghost_data["Data"] = ["1"] * (end_day - start_day)
+                self.__data = ghost_data
 
     def get_data(self):
         return self.__data

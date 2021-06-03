@@ -20,12 +20,11 @@ class PDFButton(QPushButton):
 
     def __PDF(self):
         try:
-            data = ReadData(self.__parent.Data.FILENAME, self.__parent.Data.COUNTRIES_CLICKED, \
+            data = ReadData(self.__parent.Data.FILENAME, self.__parent.Data.COUNTRIES_CLICKED,
                             self.__parent.Data.START_DAY, self.__parent.Data.END_DAY).get_data()
-            plot = Graph(data, self.__parent.Data.START_DAY, self.__parent.get_type(), self.__parent.Data.END_DAY)
-
+            plot = Graph(data, self.__parent.Data.START_DAY, self.__parent.Data.END_DAY,
+                         self.__parent)
             img_data = plot.get_img()
-
             img = ImageReader(img_data)
             filename = self.__prepare_file_chooser()
             self.__pdf_generator.create_and_save_report(img, filename)

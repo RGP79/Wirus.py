@@ -4,6 +4,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as Figure
 from Exceptions import ErrorWindow
 from File_service import ReadData
 
+
 class Graph(Figure):
     __IMG_FORMAT = "png"
 
@@ -41,6 +42,9 @@ class Graph(Figure):
         img_data.seek(seek_offset)
 
         return img_data
+
+    def make_plot(self, n_of_patients_in_countries, x):
+        pass
 
 
 class UpdateGraph:
