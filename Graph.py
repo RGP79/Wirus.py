@@ -21,8 +21,7 @@ class Graph(Figure):
         for i in range(end_day - start_day):
             x.append(start_day + i)
 
-        for country, data in n_of_patients_in_countries.items():
-            self.ax.semilogy(x, data, label=country)
+        self.make_plot(n_of_patients_in_countries, x)
 
         self.ax.legend()
 
@@ -47,6 +46,24 @@ class Graph(Figure):
         pass
 
 
+class Plot(Graph):
+    def __init__(self, data, start_day, end_day, parent):
+        super().__init__(data, start_day, end_day, parent)
+
+    def make_plot(self, n_of_patients_in_countries, x):
+        for country, data in n_of_patients_in_countries.items():
+            self.ax.plot(x, data, label=country)
+
+
+class Semilogy(Graph):
+    def __init__(self, data, start_day, end_day, parent):
+        super().__init__(data, start_day, end_day, parent)
+
+    def make_plot(self, n_of_patients_in_countries, x):
+        for country, data in n_of_patients_in_countries.items():
+            self.ax.semilogy(x, data, label=country)
+
+
 class UpdateGraph:
     def __init__(self, parent):
         self.__type = parent.get_type()
@@ -55,13 +72,23 @@ class UpdateGraph:
 
     def __cos(self):
         try:
-            print(f"to jest end day {self.__parent.Data.END_DAY}")
+            print(f"to jest end day1 {self.__parent.Data.END_DAY}")
             data = ReadData(self.__parent.Data.FILENAME, self.__parent.Data.COUNTRIES_CLICKED,
                             self.__parent.Data.START_DAY, self.__parent.Data.END_DAY).get_data()
-            plot = Graph(data, self.__parent.Data.START_DAY, self.__parent.Data.END_DAY, self.__parent)
+            plot = self.choose_mode(data)
             self.__parent.main_layout.removeWidget(self.__parent.get_graph())
             self.__parent.main_layout.addWidget(plot, 0, 0, 4, 3)
             self.__parent.setLayout(self.__parent.main_layout)
-
+            print("koniec")
         except:
             ErrorWindow("Nie wybrano pliku lub państw!")
+
+    def choose_mode(self, data):
+        print(self.__parent.Data.CHECK_BOX)
+        if self.__parent.Data.CHECK_BOX == "Semilogy":
+            plot = Semilogy(data, self.__parent.Data.START_DAY, self.__parent.Data.END_DAY, self.__parent)
+            print("semilogy")
+        if self.__parent.Data.CHECK_BOX == "Plot":
+            plot = Plot(data, self.__parent.Data.START_DAY, self.__parent.Data.END_DAY, self.__parent)
+            print("plot")
+        return plot

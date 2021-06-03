@@ -14,6 +14,8 @@ from TimeSlider import SliderWindow
 from ResetButton import ResetButton
 from Data import Data
 from Look_Config import Config
+from Wirus_git.Wirus_clone.CheckMode import PlotBox
+from Wirus_git.Wirus_clone.Graph import Semilogy
 
 
 class InputDataButton(QPushButton):
@@ -30,7 +32,7 @@ class Window(QWidget):
         self.type = type
         self.Data = data
         self.data = dict()
-        self.data["Data"] = ["1"]
+        self.data["Data"] = ["1"] * data.END_DAY
         self.__plot = None
         self.countries = []
         self.main_layout = QGridLayout()
@@ -40,21 +42,22 @@ class Window(QWidget):
         self.__pdf_button = PDFButton(self)
         self.__slider_time = SliderWindow(100, self)
         self.__search = SearchPanel(self)
-        self.__plot = Graph(self.data, self.Data.START_DAY, self.Data.END_DAY, self)
+        self.__plot = Semilogy(self.data, self.Data.START_DAY, self.Data.END_DAY, self)
         self.__country_box = CountryBox(self.countries, self)
         self.input = InputDataButton()
         self.input.clicked.connect(self.input_click_func())
         self.__search.textChanged.connect(self.search_click_func())
         self.__reset_button = ResetButton(self)
-
+        self.__mode_box = PlotBox(["Plot", "Semilogy"], self)
         # stworzenie jakis widgetow (wywolanie fucnkji z gory)
         self.main_layout.addWidget(self.__country_box, 1, 3, 3, 4)
         self.main_layout.addWidget(self.__plot, 0, 0, 4, 3)
-        self.main_layout.addWidget(self.__pdf_button, 4, 5, 1, 1)
-        self.main_layout.addWidget(self.__slider_time, 4, 0, 1, 4)
+        self.main_layout.addWidget(self.__pdf_button, 4, 4, 1, 1)
+        self.main_layout.addWidget(self.__slider_time, 4, 0, 1, 3)
         self.main_layout.addWidget(self.__search, 0, 3, 1, 4)
-        self.main_layout.addWidget(self.input, 4, 4, 1, 1)
-        self.main_layout.addWidget(self.__reset_button, 4, 6, 1, 1)
+        self.main_layout.addWidget(self.input, 4, 3, 1, 1)
+        self.main_layout.addWidget(self.__reset_button, 4, 5, 1, 1)
+        self.main_layout.addWidget(self.__mode_box, 4, 6, 1, 1)
         self.main_layout.setContentsMargins(1, 1, 1, 1)
 
         # wsadzenie tych widgetow do okna (ustawinie pozycji)
@@ -77,7 +80,7 @@ class Window(QWidget):
             data_range = ReadLen(self.Data.FILENAME).get_len()
             self.main_layout.removeWidget(self.__slider_time)
             self.__slider_time = SliderWindow(data_range, self)
-            self.main_layout.addWidget(self.__slider_time, 4, 0, 1, 4)
+            self.main_layout.addWidget(self.__slider_time, 4, 0, 1, 3)
 
             self.setLayout(self.main_layout)
 
@@ -105,6 +108,9 @@ class Window(QWidget):
 
     def get_type(self):
         return self.type
+
+    def get_reset(self):
+        return self.__reset_button
 
 
 class MainWindow(QMainWindow):

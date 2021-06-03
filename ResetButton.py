@@ -11,10 +11,10 @@ class ResetButton(QPushButton):
         self.__parent = parent
         super().__init__("RESET")
         self.__value = "RESET"
-        self.clicked.connect(self.__reset)
+        self.clicked.connect(self.reset)
         self.setStyleSheet(Config.RESET_BTN)
 
-    def __reset(self):
+    def reset(self):
         try:
             self.__parent.Data.COUNTRIES_CLICKED = []
             for btn in self.__parent.get_country_box().all_buttons:

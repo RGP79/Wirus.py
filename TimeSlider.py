@@ -15,13 +15,13 @@ class SliderWindow(QWidget):
 
     def __create_window(self, data_range, parent):
         vbox = QVBoxLayout()
-        lower_slider = LowerTimeSlider(data_range, parent)
-        upper_slider = UpperTimeSlider(data_range, parent)
-        vbox.addWidget(lower_slider)
+        self.lower_slider = LowerTimeSlider(data_range, parent)
+        self.upper_slider = UpperTimeSlider(data_range, parent)
+        vbox.addWidget(self.lower_slider)
         vbox.addSpacing(5)
         vbox.setGeometry(QRect(1000, 60, 1000, 60))
         vbox.setContentsMargins(5, 5, 5, 5)
-        vbox.addWidget(upper_slider)
+        vbox.addWidget(self.upper_slider)
         self.setLayout(vbox)
         self.setGeometry(300, 300, 1000, 60)
 
@@ -72,7 +72,7 @@ class LowerTimeSlider(TimeSlider):
             self.__parent.Data.START_DAY = int(value)
             self.__parent.Data.FIRST_PDF_DATE = date[:10]
             UpdateGraph(self.__parent)
-            if self.__parent.Data.START_DAY-3 > self.__parent.Data.END_DAY:
+            if self.__parent.Data.START_DAY - 3 > self.__parent.Data.END_DAY:
                 self.sld.setValue(self.__parent.Data.END_DAY - 3)
 
         except:
@@ -119,6 +119,8 @@ class UpdateSliders:
             print(f"to jest end day {self.__parent.Data.END_DAY}")
             data_range = ReadLen(self.__parent.Data.FILENAME).get_len()
             slider = SliderWindow(data_range, self.__parent)
+            self.__parent.Data.END_DAY = slider.upper_slider.end
+            self.__parent.Data.START_DAY = 0
             self.__parent.main_layout.removeWidget(self.__parent.get_slider())
             self.__parent.main_layout.addWidget(slider, 4, 0, 1, 4)
             self.__parent.setLayout(self.__parent.main_layout)
