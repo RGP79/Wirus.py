@@ -60,8 +60,10 @@ class FirstDay:
             b = a.split("/")
             if len(b[0]) == 1:
                 self.__parent.Data.FIRST_DATE = f"20{b[2]}-0{b[0]}-{b[1]}"
+                self.__parent.Data.FIRST_PDF_DATE = self.__parent.Data.FIRST_DATE
             else:
                 self.__parent.Data.FIRST_DATE = f"20{b[2]}-{b[0]}-{b[1]}"
+                self.__parent.Data.FIRST_PDF_DATE = self.__parent.Data.FIRST_DATE
 
 
 class EndDay:
@@ -82,8 +84,10 @@ class EndDay:
             self.__parent.Data.END_DAY = ReadLen(self.__filepath).get_len()
             if len(b[0]) == 1:
                 self.__parent.Data.LAST_DATE = f"20{b[2][0:2]}-0{b[0]}-{b[1]}"
+                self.__parent.Data.END_PDF_DATE = self.__parent.Data.LAST_DATE
             else:
                 self.__parent.Data.LAST_DATE = f"20{b[2][0:2]}-{b[0]}-{b[1]}"
+                self.__parent.Data.END_PDF_DATE = self.__parent.Data.LAST_DATE
 
 
 class ReadData:

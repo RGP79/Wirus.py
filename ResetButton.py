@@ -19,6 +19,8 @@ class ResetButton(QPushButton):
             self.__parent.Data.COUNTRIES_CLICKED = []
             for btn in self.__parent.get_country_box().all_buttons:
                 btn.get_color()
+            self.__parent.Data.END_PDF_DATE = self.__parent.Data.LAST_DATE
+            self.__parent.Data.FIRST_PDF_DATE = self.__parent.Data.FIRST_DATE
             UpdateGraph(self.__parent)
             UpdateSliders(self.__parent)
             print(self.__parent.Data.COUNTRIES_CLICKED)

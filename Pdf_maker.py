@@ -5,6 +5,7 @@ from reportlab.pdfgen.canvas import Canvas
 from Graph import Graph, ReadData
 from Exceptions import ErrorWindow
 from Look_Config import Config
+from Wirus_git.Wirus_clone.Graph import UpdateGraph, Semilogy, Plot
 
 
 class PDFButton(QPushButton):
@@ -22,8 +23,11 @@ class PDFButton(QPushButton):
         try:
             data = ReadData(self.__parent.Data.FILENAME, self.__parent.Data.COUNTRIES_CLICKED,
                             self.__parent.Data.START_DAY, self.__parent.Data.END_DAY).get_data()
-            plot = Graph(data, self.__parent.Data.START_DAY, self.__parent.Data.END_DAY,
-                         self.__parent)
+            if self.__parent.Data.CHECK_BOX == "Semilogy":
+                plot = Semilogy(data, self.__parent.Data.START_DAY, self.__parent.Data.END_DAY, self.__parent)
+                print("semilogy")
+            if self.__parent.Data.CHECK_BOX == "Plot":
+                plot = Plot(data, self.__parent.Data.START_DAY, self.__parent.Data.END_DAY, self.__parent)
             img_data = plot.get_img()
             img = ImageReader(img_data)
             filename = self.__prepare_file_chooser()
