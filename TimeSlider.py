@@ -3,9 +3,11 @@ from PyQt5.QtWidgets import QWidget, QSlider, QLabel, QHBoxLayout, QVBoxLayout
 from PyQt5.QtGui import *
 from Graph import UpdateGraph
 from datetime import datetime, timedelta
-from Exceptions import ErrorWindow
+
 from File_service import ReadLen
 from Look_Config import Config
+
+from Wirus_git.Wirus_clone.Exceptions import Warning
 
 
 class SliderWindow(QWidget):
@@ -56,7 +58,7 @@ class TimeSlider(QWidget):
 class LowerTimeSlider(TimeSlider):
 
     def __init__(self, data_range, parent):
-        super().__init__(data_range, parent.Data.FIRST_DATE)
+        super().__init__(data_range, parent.Data.get_first_date())
         self.sld.valueChanged.connect(self.__update_label)
         self.__parent = parent
         self.__type = parent.get_type()
@@ -66,23 +68,23 @@ class LowerTimeSlider(TimeSlider):
     def __update_label(self, value):
         try:
             date_format = '%Y-%m-%d'
-            print(f"value lower -> {value}")
-            date = str(datetime.strptime(self.__parent.Data.FIRST_DATE, date_format) + timedelta(value))
+
+            date = str(datetime.strptime(self.__parent.Data.get_first_date(), date_format) + timedelta(value))
             self.label.setText(date[:10])
-            self.__parent.Data.START_DAY = int(value)
-            self.__parent.Data.FIRST_PDF_DATE = date[:10]
+            self.__parent.Data.set_start_day(int(value))
+            self.__parent.Data.set_start_pdf_date(date[:10])
             UpdateGraph(self.__parent)
-            if self.__parent.Data.START_DAY - 3 > self.__parent.Data.END_DAY:
-                self.sld.setValue(self.__parent.Data.END_DAY - 3)
+            if self.__parent.Data.get_start_day() - 3 > self.__parent.Data.get_end_day():
+                self.sld.setValue(self.__parent.Data.get_end_day() - 3)
 
         except:
-            ErrorWindow("Brak wczytanego pliku!")
+            Warning("Brak wczytanego pliku!")
 
 
 class UpperTimeSlider(TimeSlider):
 
     def __init__(self, data_range, parent):
-        super().__init__(data_range, parent.Data.LAST_DATE)
+        super().__init__(data_range, parent.Data.get_last_date())
         self.sld.valueChanged.connect(self.__update_label)
         self.__parent = parent
         self.end = data_range
@@ -93,19 +95,17 @@ class UpperTimeSlider(TimeSlider):
     def __update_label(self, value):
         try:
             date_format = '%Y-%m-%d'
-            print(f"value upper -> {value}")
-            date = str(datetime.strptime(self.__parent.Data.LAST_DATE, date_format) - timedelta(value))
+
+            date = str(datetime.strptime(self.__parent.Data.get_last_date(), date_format) - timedelta(value))
             self.label.setText(date[:10])
-            self.__parent.Data.END_DAY = self.end - int(value)
-            self.__parent.Data.END_PDF_DATE = date[:10]
+            self.__parent.Data.set_end_day(self.end - int(value))
+            self.__parent.Data.set_end_pdf_date(date[:10])
             UpdateGraph(self.__parent)
-            if self.__parent.Data.END_DAY < self.__parent.Data.START_DAY:
-                print(self.end)
-                print(self.__parent.Data.START_DAY)
-                self.sld.setValue(self.end - self.__parent.Data.START_DAY - 3)
+            if self.__parent.Data.get_end_day() < self.__parent.Data.get_start_day():
+                self.sld.setValue(self.end - self.__parent.Data.get_start_day() - 3)
 
         except:
-            ErrorWindow("Brak wczytanego pliku!")
+            Warning("Brak wczytanego pliku!")
 
 
 class UpdateSliders:
@@ -116,13 +116,13 @@ class UpdateSliders:
 
     def __update(self):
         try:
-            print(f"to jest end day {self.__parent.Data.END_DAY}")
-            data_range = ReadLen(self.__parent.Data.FILENAME).get_len()
+
+            data_range = ReadLen(self.__parent.Data.get_filename()).get_len()
             slider = SliderWindow(data_range, self.__parent)
-            self.__parent.Data.END_DAY = slider.upper_slider.end
-            self.__parent.Data.START_DAY = 0
+            self.__parent.Data.set_end_day(slider.upper_slider.end)
+            self.__parent.Data.set_start_day(0)
             self.__parent.main_layout.removeWidget(self.__parent.get_slider())
             self.__parent.main_layout.addWidget(slider, 4, 0, 1, 4)
             self.__parent.setLayout(self.__parent.main_layout)
         except:
-            ErrorWindow("Nie wybrano pliku lub państw!")
+            Warning("Nie wybrano pliku lub państw!")

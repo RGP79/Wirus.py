@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QScrollArea, QFormLayout, QGroupBox, QGraphicsDropSh
 from Graph import UpdateGraph
 from Exceptions import ErrorWindow
 from Look_Config import Config
-
+from Wirus_git.Wirus_clone.Data import Data
 
 @unique
 class Color(Enum):
@@ -71,21 +71,21 @@ class PushCountryButtons(QPushButton):
 
         if self.mode == Color.CLICKED:
             name = self.__name
-            self.parent.Data.COUNTRIES_CLICKED.remove(name)
+            self.parent.Data.remove_country(name)
             self.get_color()
             UpdateGraph(self.parent)
         else:
-            if len(self.parent.Data.COUNTRIES_CLICKED) < 6:
+            if len(self.parent.Data.get_countries()) < 6:
                 name = self.__name
-                self.parent.Data.COUNTRIES_CLICKED.append(name)
+                self.parent.Data.add_country(name)
                 self.get_color()
                 UpdateGraph(self.parent)
             else:
                 ErrorWindow("Mozna dodac maksymalnie 6 krajow!")
-        print(self.parent.Data.COUNTRIES_CLICKED)
+        print(self.parent.Data.get_countries())
 
     def get_color(self):
-        if self.__name in self.parent.Data.COUNTRIES_CLICKED:
+        if self.__name in self.parent.Data.get_countries():
             self.mode = Color.CLICKED
             self.setStyleSheet(Config.COUNTRY_BTN_CLICKED)
         else:

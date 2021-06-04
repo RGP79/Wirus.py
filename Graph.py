@@ -16,7 +16,7 @@ class Graph(Figure):
         self.create_graph(data, start_day, end_day)
 
     def create_graph(self, n_of_patients_in_countries, start_day, end_day):
-        print(n_of_patients_in_countries)
+
         x = []
         for i in range(end_day - start_day):
             x.append(start_day + i)
@@ -72,23 +72,23 @@ class UpdateGraph:
 
     def __cos(self):
         try:
-            print(f"to jest end day1 {self.__parent.Data.END_DAY}")
-            data = ReadData(self.__parent.Data.FILENAME, self.__parent.Data.COUNTRIES_CLICKED,
-                            self.__parent.Data.START_DAY, self.__parent.Data.END_DAY).get_data()
+
+            data = ReadData(self.__parent.Data.get_filename(), self.__parent.Data.get_countries(),
+                            self.__parent.Data.get_start_day(), self.__parent.Data.get_end_day()).get_data()
             plot = self.choose_mode(data)
             self.__parent.main_layout.removeWidget(self.__parent.get_graph())
             self.__parent.main_layout.addWidget(plot, 0, 0, 4, 3)
             self.__parent.setLayout(self.__parent.main_layout)
-            print("koniec")
+
         except:
             ErrorWindow("Nie wybrano pliku lub państw!")
 
     def choose_mode(self, data):
-        print(self.__parent.Data.CHECK_BOX)
-        if self.__parent.Data.CHECK_BOX == "Semilogy":
-            plot = Semilogy(data, self.__parent.Data.START_DAY, self.__parent.Data.END_DAY, self.__parent)
-            print("semilogy")
-        if self.__parent.Data.CHECK_BOX == "Plot":
-            plot = Plot(data, self.__parent.Data.START_DAY, self.__parent.Data.END_DAY, self.__parent)
-            print("plot")
+
+        if self.__parent.Data.get_check_box() == "Semilogy":
+            plot = Semilogy(data, self.__parent.Data.get_start_day(), self.__parent.Data.get_end_day(), self.__parent)
+
+        if self.__parent.Data.get_check_box() == "Plot":
+            plot = Plot(data, self.__parent.Data.get_start_day(), self.__parent.Data.get_end_day(), self.__parent)
+
         return plot

@@ -5,6 +5,7 @@ from TimeSlider import UpdateSliders
 from Look_Config import Config
 
 
+
 class ResetButton(QPushButton):
     def __init__(self, parent):
         self.__type = parent.get_type()
@@ -16,13 +17,13 @@ class ResetButton(QPushButton):
 
     def reset(self):
         try:
-            self.__parent.Data.COUNTRIES_CLICKED = []
+            self.__parent.Data.reset_countries()
             for btn in self.__parent.get_country_box().all_buttons:
                 btn.get_color()
-            self.__parent.Data.END_PDF_DATE = self.__parent.Data.LAST_DATE
-            self.__parent.Data.FIRST_PDF_DATE = self.__parent.Data.FIRST_DATE
+            self.__parent.Data.set_end_pdf_date(self.__parent.Data.get_last_date())
+            self.__parent.Data.set_start_pdf_date(self.__parent.Data.get_first_date())
             UpdateGraph(self.__parent)
             UpdateSliders(self.__parent)
-            print(self.__parent.Data.COUNTRIES_CLICKED)
+
         except:
             ErrorWindow("Nie tedy drogsa")

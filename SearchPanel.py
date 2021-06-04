@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QLineEdit
 from Country_box import CountryBox
 from Look_Config import Config
+from Wirus_git.Wirus_clone.Exceptions import Warning
 
 
 class SearchPanel(QLineEdit):
@@ -23,11 +24,13 @@ class SearchPanel(QLineEdit):
         return new
 
     def search_clicked(self, parent):
-
-        txt = self.text()
-        new = self.get_btns(txt, parent.countries)
-        parent.main_layout.removeWidget(parent.get_country_box())
-        new_box = CountryBox(new, self.__parent)
-        parent.set_box(new_box)
-        parent.main_layout.addWidget(new_box, 1, 3, 3, 4)
-        parent.setLayout(parent.main_layout)
+        try:
+            txt = self.text()
+            new = self.get_btns(txt, parent.countries)
+            parent.main_layout.removeWidget(parent.get_country_box())
+            new_box = CountryBox(new, self.__parent)
+            parent.set_box(new_box)
+            parent.main_layout.addWidget(new_box, 1, 3, 3, 4)
+            parent.setLayout(parent.main_layout)
+        except:
+            Warning("Brak pliku z danymi!")

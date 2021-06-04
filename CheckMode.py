@@ -42,7 +42,7 @@ class CheckBox(QCheckBox):
 
     def action(self):
         if self.isChecked():
-            self.__parent.Data.CHECK_BOX = self.__name
+            self.__parent.Data.set_check_box(self.__name)
             for btn in self.__box.btns:
                 if btn is not self:
                     btn.setChecked(False)

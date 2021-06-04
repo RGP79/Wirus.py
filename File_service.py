@@ -1,3 +1,4 @@
+
 COUNTRY_COLUMN_ID = 1
 
 
@@ -59,11 +60,11 @@ class FirstDay:
             a = line.split(",")[4]
             b = a.split("/")
             if len(b[0]) == 1:
-                self.__parent.Data.FIRST_DATE = f"20{b[2]}-0{b[0]}-{b[1]}"
-                self.__parent.Data.FIRST_PDF_DATE = self.__parent.Data.FIRST_DATE
+                self.__parent.Data.set_first_date(f"20{b[2]}-0{b[0]}-{b[1]}")
+                self.__parent.Data.set_start_pdf_date(self.__parent.Data.get_first_date())
             else:
-                self.__parent.Data.FIRST_DATE = f"20{b[2]}-{b[0]}-{b[1]}"
-                self.__parent.Data.FIRST_PDF_DATE = self.__parent.Data.FIRST_DATE
+                self.__parent.Data.set_first_date(f"20{b[2]}-{b[0]}-{b[1]}")
+                self.__parent.Data.set_start_pdf_date(self.__parent.Data.get_first_date())
 
 
 class EndDay:
@@ -79,15 +80,14 @@ class EndDay:
             data = line.split(",")
             a = data[-1]
             b = a.split("/")
-            print(b)
-            print(b[2][0:2])
-            self.__parent.Data.END_DAY = ReadLen(self.__filepath).get_len()
+
+            self.__parent.Data.set_end_day(ReadLen(self.__filepath).get_len())
             if len(b[0]) == 1:
-                self.__parent.Data.LAST_DATE = f"20{b[2][0:2]}-0{b[0]}-{b[1]}"
-                self.__parent.Data.END_PDF_DATE = self.__parent.Data.LAST_DATE
+                self.__parent.Data.set_last_date(f"20{b[2][0:2]}-0{b[0]}-{b[1]}")
+                self.__parent.Data.set_end_pdf_date(self.__parent.Data.get_last_date())
             else:
-                self.__parent.Data.LAST_DATE = f"20{b[2][0:2]}-{b[0]}-{b[1]}"
-                self.__parent.Data.END_PDF_DATE = self.__parent.Data.LAST_DATE
+                self.__parent.Data.set_last_date(f"20{b[2][0:2]}-{b[0]}-{b[1]}")
+                self.__parent.Data.set_end_pdf_date(self.__parent.Data.get_last_date())
 
 
 class ReadData:
