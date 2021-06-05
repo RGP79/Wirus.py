@@ -13,10 +13,13 @@ class ResetButton(QPushButton):
         self.setStyleSheet(Config.RESET_BTN)
 
     def reset(self):
-        self.__parent.Data.reset_countries()
-        for btn in self.__parent.get_country_box().all_buttons:
-            btn.get_color()
-        self.__parent.Data.set_end_pdf_date(self.__parent.Data.get_last_date())
-        self.__parent.Data.set_start_pdf_date(self.__parent.Data.get_first_date())
-        UpdateGraph(self.__parent)
-        UpdateSliders(self.__parent)
+        try:
+            self.__parent.Data.reset_countries()
+            for btn in self.__parent.get_country_box().all_buttons:
+                btn.get_color()
+            self.__parent.Data.set_end_pdf_date(self.__parent.Data.get_last_date())
+            self.__parent.Data.set_start_pdf_date(self.__parent.Data.get_first_date())
+            UpdateGraph(self.__parent)
+            UpdateSliders(self.__parent)
+        except:
+            pass
