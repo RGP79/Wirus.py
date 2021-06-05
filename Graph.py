@@ -9,7 +9,7 @@ class Graph(Figure):
     __IMG_FORMAT = "png"
 
     def __init__(self, data, start_day, end_day, parent):
-        self.fig, self.ax = plt.subplots(figsize=(3, 4), dpi=160)
+        self.fig, self.ax = plt.subplots(figsize=(6, 7))
         super().__init__(self.fig)
         self.__type = parent.get_type()
         self.__parent = parent
@@ -68,9 +68,9 @@ class UpdateGraph:
     def __init__(self, parent):
 
         self.__parent = parent
-        self.__cos()
+        self.__update()
 
-    def __cos(self):
+    def __update(self):
         try:
 
             data = ReadData(self.__parent.Data.get_filename(), self.__parent.Data.get_countries(),

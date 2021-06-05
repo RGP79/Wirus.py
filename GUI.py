@@ -21,7 +21,7 @@ from Graph import Semilogy
 
 class InputDataButton(QPushButton):
     def __init__(self):
-        super().__init__("INPUT DATA")
+        super().__init__("OPEN FILE")
         # self.setStyleSheet(Config.INPUT_BTN)
 
 
@@ -120,9 +120,9 @@ class MainWindow(QMainWindow):
         self.__tabs.addTab(Window("zdrowi"), "Ozdrowienia")
         self.setCentralWidget(self.__tabs)
         # self.setStyleSheet(Config.BACKGROUND_COLOR)
-        self.setWindowTitle("WIRUS")
-        # self.setFixedHeight(750)
-        # self.setFixedWidth(1200)
+        self.setWindowTitle("Wirus.py")
+        self.setFixedHeight(750)
+        self.setFixedWidth(1200)
 
         self.centralWidget()
         icon = QIcon("juniwirus.png")

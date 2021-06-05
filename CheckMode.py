@@ -30,7 +30,7 @@ class CheckBox(QCheckBox):
         self.__box.btns.append(self)
         if self.__name == "Semilogy":
             self.setChecked(True)
-            self.setDisabled(True)
+            self.setDisabled(False)
         self.stateChanged.connect(self.click)
 
     def click(self):
@@ -43,6 +43,6 @@ class CheckBox(QCheckBox):
                 if btn is not self:
                     btn.setChecked(False)
                     btn.setDisabled(False)
-                    self.setDisabled(True)
+                    self.setDisabled(False)
             reset = self.__parent.get_reset()
             reset.reset()
