@@ -59,7 +59,7 @@ class LowerTimeSlider(TimeSlider):
         super().__init__(data_range, parent.Data.get_first_date())
         self.sld.valueChanged.connect(self.__update_label)
         self.__parent = parent
-        self.__type = parent.get_type()
+
         self.sld.setTickPosition(2)
         self.sld.setSliderPosition(0)
 
@@ -84,7 +84,7 @@ class UpperTimeSlider(TimeSlider):
         self.sld.valueChanged.connect(self.__update_label)
         self.__parent = parent
         self.end = data_range
-        self.__type = parent.get_type()
+
         self.sld.setTickPosition(1)
         self.sld.setInvertedAppearance(True)
 
@@ -104,7 +104,7 @@ class UpperTimeSlider(TimeSlider):
 
 class UpdateSliders:
     def __init__(self, parent):
-        self.__type = parent.get_type()
+
         self.__parent = parent
         self.__update()
 

@@ -15,11 +15,9 @@ class CountryBox(QScrollArea):
     # implementacja panelu z krajami (stworzenie boxa + przyciskow dla panstw)
     def __init__(self, countries, parent):
         super().__init__()
-        self.type = parent.get_type()
         self.verticalScrollBar().setDisabled(False)
         self.parent = parent
         self.all_buttons = []
-        self.__n_of_countries = []
         self.__init_view(countries)
         self.all_countries = []
 
@@ -43,7 +41,6 @@ class PushCountryButtons(QPushButton):
     def __init__(self, name, parent):
         super().__init__(name)
         self.__name = name
-        self.type = parent.get_type()
         self.parent = parent
         self.mode = Color.NOT_CLICKED
         self.get_color()

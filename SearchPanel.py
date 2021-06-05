@@ -8,7 +8,6 @@ class SearchPanel(QLineEdit):
     def __init__(self, parent):
         super().__init__()
         self.__parent = parent
-        self.__type = parent.get_type()
         self.line = QLineEdit(self)
 
         self.line.move(80, 20)

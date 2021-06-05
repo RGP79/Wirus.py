@@ -13,7 +13,7 @@ class PDFButton(QPushButton):
     def __init__(self, parent):
         super().__init__("EXPORT TO PDF")
         self.__parent = parent
-        self.__value = "EXPORT TO PDF"
+
         self.__pdf_generator = PdfReportGenerator(parent)
         self.clicked.connect(self.__pdf)
         self.setStyleSheet(Config.PDF_BUTTON)

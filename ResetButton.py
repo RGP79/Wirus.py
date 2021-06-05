@@ -6,10 +6,9 @@ from Look_Config import Config
 
 class ResetButton(QPushButton):
     def __init__(self, parent):
-        self.__type = parent.get_type()
+
         self.__parent = parent
         super().__init__("RESET")
-        self.__value = "RESET"
         self.clicked.connect(self.reset)
         self.setStyleSheet(Config.RESET_BTN)
 

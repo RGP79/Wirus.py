@@ -66,7 +66,7 @@ class Semilogy(Graph):
 
 class UpdateGraph:
     def __init__(self, parent):
-        self.__type = parent.get_type()
+
         self.__parent = parent
         self.__cos()
 
