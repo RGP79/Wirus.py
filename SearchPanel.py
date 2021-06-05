@@ -12,7 +12,7 @@ class SearchPanel(QLineEdit):
 
         self.line.move(80, 20)
         self.line.resize(200, 32)
-        self.setStyleSheet(Config.SEARCH_LINE)
+        # self.setStyleSheet(Config.SEARCH_LINE)
 
     def get_btns(self, txt, countries):
         new = []

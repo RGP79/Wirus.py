@@ -10,7 +10,7 @@ class ResetButton(QPushButton):
         self.__parent = parent
         super().__init__("RESET")
         self.clicked.connect(self.reset)
-        self.setStyleSheet(Config.RESET_BTN)
+        # self.setStyleSheet(Config.RESET_BTN)
 
     def reset(self):
         try:
