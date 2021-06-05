@@ -14,9 +14,9 @@ from TimeSlider import SliderWindow
 from ResetButton import ResetButton
 from Data import Data
 from Look_Config import Config
-from Wirus_git.Wirus_clone.CheckMode import PlotBox
-from Wirus_git.Wirus_clone.Exceptions import Warning
-from Wirus_git.Wirus_clone.Graph import Semilogy
+from CheckMode import PlotBox
+from Exceptions import Warning
+from Graph import Semilogy
 
 
 class InputDataButton(QPushButton):
@@ -27,12 +27,12 @@ class InputDataButton(QPushButton):
 
 class Window(QWidget):
 
-    def __init__(self, type, data):
+    def __init__(self, type):
         super().__init__()
         self.__type = type
-        self.Data = data
+        self.Data = Data()
         self.__data = dict()
-        self.__data["Data"] = ["1"] * data.get_end_day()
+        self.__data["Data"] = ["1"] * self.Data.get_end_day()
         self.__plot = None
         self.__countries = []
         self.main_layout = QGridLayout()
@@ -116,13 +116,13 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.__tabs = QTabWidget()
-        self.__tabs.addTab(Window("chorzy", Data()), "Stwierdzone przypadki zachorowania")
-        self.__tabs.addTab(Window("zdrowi", Data()), "Ozdrowienia")
+        self.__tabs.addTab(Window("chorzy"), "Stwierdzone przypadki zachorowania")
+        self.__tabs.addTab(Window("zdrowi"), "Ozdrowienia")
         self.setCentralWidget(self.__tabs)
         self.setStyleSheet(Config.BACKGROUND_COLOR)
         self.setWindowTitle("WIRUS")
-        self.setFixedHeight(750)
-        self.setFixedWidth(1075)
+        # self.setFixedHeight(750)
+        # self.setFixedWidth(1075)
 
         self.centralWidget()
         icon = QIcon("juniwirus.png")

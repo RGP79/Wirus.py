@@ -2,11 +2,9 @@ from PyQt5.QtWidgets import QPushButton, QFileDialog
 from reportlab.lib.utils import ImageReader
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen.canvas import Canvas
-from Graph import ReadData
+from Graph import ReadData, Semilogy, Plot
 from Exceptions import ErrorWindow
 from Look_Config import Config
-from Wirus_git.Wirus_clone.Graph import Semilogy, Plot
-
 
 
 class PDFButton(QPushButton):
@@ -73,7 +71,7 @@ class PdfReportGenerator:
         canvas.drawString(25, A4[1] - 80,
                           f"Zakres dat: od {self.__parent.Data.get_start_pdf_date()} do \
 {self.__parent.Data.get_end_pdf_date()}.")
-        canvas.drawString(25, A4[1] - 100, f"Typ wykresu {self.__parent.Data.get_check_box()}")
+        canvas.drawString(25, A4[1] - 100, f"Typ wykresu: {self.__parent.Data.get_check_box()}.")
 
         canvas.drawImage(img, img_x, img_y, 560, 400)
         return canvas

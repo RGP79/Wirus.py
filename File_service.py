@@ -39,7 +39,7 @@ class PatientsVector:
         if country_data_line[0:2] == ',"':
             n_of_unimportant_column = 5
         n_of_patients_in_time = country_data_line.split(",")[n_of_unimportant_column:]
-        n_of_patients_in_time = [float(val) for val in n_of_patients_in_time]
+        n_of_patients_in_time = [int(val) for val in n_of_patients_in_time]
 
         self.__vector = n_of_patients_in_time
 

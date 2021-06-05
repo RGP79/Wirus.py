@@ -1,11 +1,10 @@
 from PyQt5.QtWidgets import QLineEdit
 from Country_box import CountryBox
 from Look_Config import Config
-from Wirus_git.Wirus_clone.Exceptions import Warning
+from Exceptions import Warning
 
 
 class SearchPanel(QLineEdit):
-    # implementajca wyszukiwarki panstw
     def __init__(self, parent):
         super().__init__()
         self.__parent = parent

@@ -3,11 +3,9 @@ from PyQt5.QtWidgets import QWidget, QSlider, QLabel, QHBoxLayout, QVBoxLayout
 from PyQt5.QtGui import *
 from Graph import UpdateGraph
 from datetime import datetime, timedelta
-
 from File_service import ReadLen
 from Look_Config import Config
-
-from Wirus_git.Wirus_clone.Exceptions import Warning
+from Exceptions import Warning
 
 
 class SliderWindow(QWidget):
@@ -68,7 +66,6 @@ class LowerTimeSlider(TimeSlider):
     def __update_label(self, value):
         try:
             date_format = '%Y-%m-%d'
-
             date = str(datetime.strptime(self.__parent.Data.get_first_date(), date_format) + timedelta(value))
             self.label.setText(date[:10])
             self.__parent.Data.set_start_day(int(value))
@@ -76,7 +73,6 @@ class LowerTimeSlider(TimeSlider):
             UpdateGraph(self.__parent)
             if self.__parent.Data.get_start_day() - 3 > self.__parent.Data.get_end_day():
                 self.sld.setValue(self.__parent.Data.get_end_day() - 3)
-
         except:
             Warning("Brak wczytanego pliku!")
 
@@ -95,7 +91,6 @@ class UpperTimeSlider(TimeSlider):
     def __update_label(self, value):
         try:
             date_format = '%Y-%m-%d'
-
             date = str(datetime.strptime(self.__parent.Data.get_last_date(), date_format) - timedelta(value))
             self.label.setText(date[:10])
             self.__parent.Data.set_end_day(self.end - int(value))
@@ -103,7 +98,6 @@ class UpperTimeSlider(TimeSlider):
             UpdateGraph(self.__parent)
             if self.__parent.Data.get_end_day() < self.__parent.Data.get_start_day():
                 self.sld.setValue(self.end - self.__parent.Data.get_start_day() - 3)
-
         except:
             Warning("Brak wczytanego pliku!")
 
@@ -116,7 +110,6 @@ class UpdateSliders:
 
     def __update(self):
         try:
-
             data_range = ReadLen(self.__parent.Data.get_filename()).get_len()
             slider = SliderWindow(data_range, self.__parent)
             self.__parent.Data.set_end_day(slider.upper_slider.end)

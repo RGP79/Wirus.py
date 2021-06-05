@@ -11,7 +11,7 @@ class Graph(Figure):
     def __init__(self, data, start_day, end_day, parent):
         self.fig, self.ax = plt.subplots(figsize=(7, 5), dpi=160)
         super().__init__(self.fig)
-        self.type = parent.get_type()
+        self.__type = parent.get_type()
         self.__parent = parent
         self.create_graph(data, start_day, end_day)
 
@@ -26,10 +26,10 @@ class Graph(Figure):
         self.ax.legend()
 
         self.ax.set_xlim([start_day, end_day])
-        if self.type == "chorzy":
+        if self.__type == "chorzy":
             self.ax.set_title("Wykres zachorowań")
             self.ax.set_ylabel("Liczba zachorowań")
-        elif self.type == "zdrowi":
+        elif self.__type == "zdrowi":
             self.ax.set_title("Wykres ozdrowień")
             self.ax.set_ylabel("Liczba ozdrowień")
         self.ax.set_xlabel("Liczba dni")

@@ -1,10 +1,9 @@
 from enum import Enum, auto, unique
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QScrollArea, QFormLayout, QGroupBox, QGraphicsDropShadowEffect, QPushButton
+from PyQt5.QtWidgets import QScrollArea, QFormLayout, QGroupBox, QPushButton
 from Graph import UpdateGraph
 from Exceptions import ErrorWindow
 from Look_Config import Config
-from Wirus_git.Wirus_clone.Data import Data
 
 @unique
 class Color(Enum):
@@ -56,14 +55,6 @@ class PushCountryButtons(QPushButton):
         # self.shadow.setYOffset(3)
         # self.setGraphicsEffect(self.shadow)
 
-    def color(self):
-        if self.mode == Color.CLICKED:
-            self.setStyleSheet(Config.COUNTRY_BTN_UNCLICKED)
-            self.mode = Color.NOT_CLICKED
-        else:
-            self.setStyleSheet(Config.COUNTRY_BTN_CLICKED)
-            self.mode = Color.CLICKED
-
     def func_click_me(self):
         return lambda _: self.names()
 
@@ -82,7 +73,6 @@ class PushCountryButtons(QPushButton):
                 UpdateGraph(self.parent)
             else:
                 ErrorWindow("Mozna dodac maksymalnie 6 krajow!")
-        print(self.parent.Data.get_countries())
 
     def get_color(self):
         if self.__name in self.parent.Data.get_countries():

@@ -1,8 +1,4 @@
-from enum import unique, Enum, auto
-
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QCheckBox
-
-from Wirus_git.Wirus_clone.Data import Data
 
 
 class PlotBox(QWidget):
