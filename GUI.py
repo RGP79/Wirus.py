@@ -5,7 +5,6 @@ from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QPushButton, \
     QFileDialog, QMainWindow, QTabWidget
 from PyQt5.QtGui import *
 
-
 from Country_box import CountryBox
 from File_service import ReadCountries, ReadLen, FirstDay, EndDay
 from Pdf_maker import PDFButton
@@ -119,21 +118,16 @@ class MainWindow(QMainWindow):
         self.__tabs.addTab(Window("chorzy"), "Stwierdzone przypadki zachorowania")
         self.__tabs.addTab(Window("zdrowi"), "Ozdrowienia")
         self.setCentralWidget(self.__tabs)
-        self.setStyleSheet(Config.BACKGROUND_COLOR)
+        # self.setStyleSheet(Config.BACKGROUND_COLOR)
         self.setWindowTitle("WIRUS")
         # self.setFixedHeight(750)
         # self.setFixedWidth(1075)
 
         self.centralWidget()
-        icon = QIcon("juniwirus.png")
-        self.setWindowIcon(icon)
+        # icon = QIcon("juniwirus.png")
+        # self.setWindowIcon(icon)
         self.setIconSize(QSize(400, 400))
         self.show()
 
 
-if __name__ == "__main__":
-    app = QApplication([])
-    app.setStyle(Config.WINDOW_STYLE)
-    window = MainWindow()
 
-    sys.exit(app.exec_())
