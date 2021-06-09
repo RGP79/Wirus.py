@@ -3,7 +3,7 @@ class Data:
         self.__countries_clicked = []
         self.__filename = None
         self.__start_day = 0
-        self.__end_day = 10
+        self.__end_day = 100
         self.__first_date = None
         self.__last_date = None
         self.__start_pdf_date = None

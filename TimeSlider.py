@@ -110,12 +110,13 @@ class UpdateSliders:
 
     def __update(self):
         try:
+            self.__parent.reset_slider()
             data_range = ReadLen(self.__parent.Data.get_filename()).get_len()
             slider = SliderWindow(data_range, self.__parent)
             self.__parent.Data.set_end_day(slider.upper_slider.end)
             self.__parent.Data.set_start_day(0)
-            self.__parent.main_layout.removeWidget(self.__parent.get_slider())
-            self.__parent.main_layout.addWidget(slider, 4, 0, 1, 4)
+            self.__parent.set_slider(slider)
+            self.__parent.main_layout.addWidget(self.__parent.get_slider(), 4, 0, 1, 3)
             self.__parent.setLayout(self.__parent.main_layout)
         except:
             Warning("Nie wybrano pliku lub państw!")

@@ -16,7 +16,7 @@ class PDFButton(QPushButton):
 
         self.__pdf_generator = PdfReportGenerator(parent)
         self.clicked.connect(self.__pdf)
-        self.setStyleSheet(Config.PDF_BUTTON)
+        # self.setStyleSheet(Config.PDF_BUTTON)
 
     def __pdf(self):
         try:

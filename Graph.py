@@ -68,11 +68,11 @@ class UpdateGraph:
     def __init__(self, parent):
 
         self.__parent = parent
-        self.__cos()
+        self.__update()
 
-    def __cos(self):
+    def __update(self):
         try:
-
+            plt.close("all")
             data = ReadData(self.__parent.Data.get_filename(), self.__parent.Data.get_countries(),
                             self.__parent.Data.get_start_day(), self.__parent.Data.get_end_day()).get_data()
             plot = self.choose_mode(data)

@@ -1,4 +1,3 @@
-
 COUNTRY_COLUMN_ID = 1
 
 
@@ -14,6 +13,7 @@ class ReadCountries:
             f.readline()
             for line in f:
                 maybe_country = line.split(",")[1]
+
                 if line[0] == ",":
 
                     self.__countries.append(maybe_country)

@@ -14,6 +14,6 @@ class ErrorWindow(QMessageBox):
         self.setWindowTitle("Error!")
         self.setText(msg)
         self.setIcon(QMessageBox.Critical)
-        #icon = QIcon("juniwirus.png")
-        #self.setWindowIcon(icon)
+        icon = QIcon("juniwirus.png")
+        self.setWindowIcon(icon)
         self.exec_()

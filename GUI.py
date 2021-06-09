@@ -20,8 +20,8 @@ from Graph import Semilogy
 
 class InputDataButton(QPushButton):
     def __init__(self):
-        super().__init__("INPUT DATA")
-        self.setStyleSheet(Config.INPUT_BTN)
+        super().__init__("OPEN FILE")
+        # self.setStyleSheet(Config.INPUT_BTN)
 
 
 class Window(QWidget):
@@ -109,6 +109,12 @@ class Window(QWidget):
     def get_reset(self):
         return self.__reset_button
 
+    def reset_slider(self):
+        self.main_layout.removeWidget(self.__slider_time)
+
+    def set_slider(self, new):
+        self.__slider_time = new
+
 
 class MainWindow(QMainWindow):
 
@@ -119,15 +125,20 @@ class MainWindow(QMainWindow):
         self.__tabs.addTab(Window("zdrowi"), "Ozdrowienia")
         self.setCentralWidget(self.__tabs)
         # self.setStyleSheet(Config.BACKGROUND_COLOR)
-        self.setWindowTitle("WIRUS")
-        # self.setFixedHeight(750)
-        # self.setFixedWidth(1075)
+        self.setWindowTitle("Wirus.py")
+        self.setFixedHeight(750)
+        self.setFixedWidth(1200)
 
         self.centralWidget()
-        # icon = QIcon("juniwirus.png")
-        # self.setWindowIcon(icon)
+        icon = QIcon("juniwirus.png")
+        self.setWindowIcon(icon)
         self.setIconSize(QSize(400, 400))
         self.show()
 
 
+if __name__ == "__main__":
+    app = QApplication([])
+    app.setStyle(Config.WINDOW_STYLE)
+    window = MainWindow()
 
+    sys.exit(app.exec_())
